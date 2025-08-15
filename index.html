@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Astra Fit</title>
+<link rel="manifest" href="/public/manifest.webmanifest">
+<meta name="theme-color" content="#c0c0c0">
+<link rel="apple-touch-icon" href="/public/icons/icon-192.png">
+<style>
+  :root{--bg:#c0c0c0}
+  html,body{height:100%;margin:0}
+  body{display:grid;place-items:center;background:var(--bg);font-family:-apple-system,system-ui}
+  .card{background:#fff;border-radius:20px;padding:24px;box-shadow:0 10px 30px rgba(0,0,0,.08);width:min(92vw,560px);text-align:center}
+  .icon{width:88px;height:88px;border-radius:20px;background:#c0c0c0;display:grid;place-items:center;margin:0 auto 12px}
+  .small{font-size:12px;color:#666}
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon"><img src="/public/icons/icon-192.png" alt="Astra Fit" width="64" height="64"></div>
+    <h1>Astra Fit</h1>
+    <p>Prototipo PWA pronto per il deploy su Vercel/GitHub Pages.</p>
+    <p class="small">© Astra Fit • a cura di Fabio Muraca</p>
+  </div>
+<script>
+if ('serviceWorker' in navigator){navigator.serviceWorker.register('/public/sw.js');}
+</script>
+</body>
+</html>
