@@ -15,7 +15,7 @@
   <meta name="theme-color" content="#000000" />
   <meta name="color-scheme" content="light" />
 
-  <!-- PWA -->
+  <!-- PWA (opzionale) -->
   <link rel="manifest" href="manifest.webmanifest" />
   <script>
     if ("serviceWorker" in navigator) {
@@ -74,7 +74,6 @@
     <!-- HERO -->
     <section class="card hero">
       <div class="logo">
-        <!-- SVG inline: niente file esterni -->
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M12 2l2.39 5.64L20.5 8l-4.5 3.9L17.3 18 12 14.9 6.7 18l1.3-6.1L3.5 8l6.11-.36L12 2z"/>
         </svg>
@@ -87,7 +86,6 @@
     <!-- CALCOLO CALORIE + MACRO -->
     <section class="card" id="calc-card">
       <h2>Calcolo calorie & macro</h2>
-
       <form id="form-kcal">
         <div>
           <label for="sex">Sesso</label>
@@ -159,7 +157,6 @@
     <!-- ANAMNESI RAPIDA & ALLENAMENTO (LOCALE) -->
     <section class="card" id="train-card">
       <h2>Anamnesi rapida & allenamento</h2>
-
       <form id="train-form">
         <div>
           <label for="exp">Esperienza</label>
@@ -225,14 +222,12 @@
           <span class="muted">Preferenze salvate localmente.</span>
         </div>
       </form>
-
       <div id="plan" style="margin-top:14px; display:none"></div>
     </section>
 
     <!-- ASSISTENTE AI -->
     <section class="card" id="ai-card">
       <h2>Assistente AI (piano personalizzato)</h2>
-
       <form id="ai-form">
         <div>
           <label for="ai-exp">Esperienza</label>
@@ -292,13 +287,12 @@
           <span class="muted" id="ai-status"></span>
         </div>
       </form>
-
       <div id="ai-out" class="tile mono" style="margin-top:12px; display:none"></div>
     </section>
 
   </main>
 
-  <!-- ===== SCRIPTS ===== -->
+  <!-- ========== SCRIPTS ========== -->
   <script>
     /* ---------- Calcolo nutrizione ---------- */
     const $ = id => document.getElementById(id);
@@ -472,8 +466,7 @@
     });
 
     /* ---------- Assistente AI (endpoint serverless) ---------- */
-    // ⬇️ Metti qui l'URL del tuo Worker/Function (es. https://astrafit-ai.tuo.workers.dev/plan)
-    const API_URL = "https://TUO-ENDPOINT-AI/plan";
+    const API_URL = "https://TUO-WORKER-URL/plan"; /* ⬅️ sostituisci con il tuo Worker */
 
     const g = id => document.getElementById(id);
     g("ai-form").addEventListener("submit", async e=>{
@@ -483,7 +476,6 @@
         equip:g("ai-equip").value, limits:g("ai-limits").value, minutes:+g("ai-min").value,
         notes:g("ai-notes").value||""
       };
-      // aggiungi nutrizione (se calcolata)
       payload.nutrition = {
         bmr: $("#bmr")?.textContent || "", tdee: $("#tdee")?.textContent || "",
         target: $("#target")?.textContent || "", pG: $("#pG")?.textContent || "",
@@ -494,7 +486,7 @@
       g("ai-out").style.display = "none"; g("ai-out").textContent = "";
 
       try{
-        if(!API_URL || API_URL.includes("TUO-ENDPOINT")) throw new Error("Configura l'API_URL.");
+        if(!API_URL.includes("http")) throw new Error("Configura l'API_URL.");
         const res = await fetch(API_URL, { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(payload) });
         if(!res.ok) throw new Error("Server non disponibile");
         const data = await res.json();
