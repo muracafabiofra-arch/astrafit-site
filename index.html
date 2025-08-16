@@ -5,87 +5,98 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Astra Fit</title>
 
-  <!-- Icona Home iPhone (file in root) -->
-  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=8" />
+  <!-- Icona Home iPhone (metti apple-touch-icon.png 180x180 nella root) -->
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=1" />
 
-  <!-- Stile “app” su iOS + modalità chiara -->
+  <!-- Stile app iOS + tema chiaro -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="AstraFit" />
   <meta name="theme-color" content="#000000" />
   <meta name="color-scheme" content="light" />
 
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.webmanifest" />
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("sw.js").catch(()=>{});
+    }
+  </script>
+
   <style>
     :root { --bg:#fff; --card:#fff; --text:#000; --muted:#666; --accent:#000; }
     * { box-sizing: border-box; }
-    html,body { height:100%; margin:0; }
-    body {
+    html,body{ height:100%; margin:0; }
+    body{
       background:var(--bg); color:var(--text);
       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
       padding:24px; display:grid; place-items:start center;
     }
-    .wrap { width:100%; max-width:820px; }
-    .card { background:var(--card); border-radius:20px; padding:22px;
-            box-shadow:0 10px 30px rgba(0,0,0,.08); margin-bottom:18px; }
-    .hero { text-align:center; padding:18px; }
-    .logo {
+    .wrap{ width:100%; max-width:880px; }
+    .card{ background:var(--card); border-radius:20px; padding:22px;
+           box-shadow:0 10px 30px rgba(0,0,0,.08); margin-bottom:18px; }
+    .hero{ text-align:center; padding:18px; }
+    .logo{
       width:72px; height:72px; border-radius:18px; background:#000; margin:0 auto 10px;
       display:grid; place-items:center;
     }
-    .logo svg { width:40px; height:40px; color:#fff; }
-    h1 { margin:8px 0 6px; font-size:28px; }
-    p { margin:6px 0; color:#222; }
-    .muted { color:var(--muted); font-size:12px; }
-    form { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-    @media (max-width:640px){ form{ grid-template-columns:1fr; } }
-    label { font-size:13px; color:#333; display:block; margin-bottom:6px; }
-    input, select {
+    .logo svg{ width:40px; height:40px; color:#fff; }
+    h1{ margin:8px 0 6px; font-size:28px; }
+    h2{ margin:0 0 10px; font-size:20px; }
+    p{ margin:6px 0; color:#222; }
+    .muted{ color:var(--muted); font-size:12px; }
+    form{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    @media (max-width:720px){ form{ grid-template-columns:1fr; } }
+    label{ font-size:13px; color:#333; display:block; margin-bottom:6px; }
+    input,select{
       width:100%; padding:10px 12px; border-radius:12px; border:1px solid #e5e5e5; font-size:16px;
       background:#fff; color:#000;
     }
-    .row { display:flex; gap:10px; }
-    .row > * { flex:1; }
-    button {
+    .row{ display:flex; gap:10px; }
+    .row>*{ flex:1; }
+    button{
       background:var(--accent); color:#fff; border:0; padding:12px 16px; border-radius:14px;
-      font-weight:600; cursor:pointer;
+      font-weight:700; cursor:pointer;
     }
-    .results { display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-top:12px; }
-    @media (max-width:640px){ .results{ grid-template-columns:1fr; } }
-    .tile { border:1px solid #eee; border-radius:14px; padding:14px; text-align:center; }
-    .tile h3 { margin:4px 0 6px; font-size:14px; color:#444; font-weight:600; }
-    .tile .big { font-size:22px; font-weight:800; }
-    .footnote { font-size:12px; color:#555; margin-top:8px; }
+    .secondary{ background:#444; }
+    .results{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:12px; }
+    @media (max-width:720px){ .results{ grid-template-columns:1fr; } }
+    .tile{ border:1px solid #eee; border-radius:14px; padding:14px; text-align:center; }
+    .tile h3{ margin:4px 0 6px; font-size:14px; color:#444; font-weight:600; }
+    .tile .big{ font-size:22px; font-weight:800; }
+    .footnote{ font-size:12px; color:#555; margin-top:8px; }
+    .mono{ white-space:pre-wrap; text-align:left; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
   </style>
 </head>
 <body>
   <main class="wrap">
+
+    <!-- HERO -->
     <section class="card hero">
       <div class="logo">
-        <!-- SVG inline (niente file esterni) -->
+        <!-- SVG inline: niente file esterni -->
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M12 2l2.39 5.64L20.5 8l-4.5 3.9L17.3 18 12 14.9 6.7 18l1.3-6.1L3.5 8l6.11-.36L12 2z"/>
         </svg>
       </div>
       <h1>Astra Fit</h1>
-      <p>Calcolo del fabbisogno calorico e dei macro – rapido e preciso.</p>
+      <p>Calcolo del fabbisogno, macro, allenamento e assistenza AI.</p>
       <p class="muted">© Astra Fit • a cura di Fabio Muraca</p>
     </section>
 
-    <section class="card">
-      <form id="form">
+    <!-- CALCOLO CALORIE + MACRO -->
+    <section class="card" id="calc-card">
+      <h2>Calcolo calorie & macro</h2>
+
+      <form id="form-kcal">
         <div>
           <label for="sex">Sesso</label>
-          <select id="sex">
-            <option value="M">Maschio</option>
-            <option value="F">Femmina</option>
-          </select>
+          <select id="sex"><option value="M">Maschio</option><option value="F">Femmina</option></select>
         </div>
-
         <div>
           <label for="age">Età (anni)</label>
-          <input id="age" type="number" min="10" max="100" inputmode="numeric" required>
+          <input id="age" type="number" min="10" max="100" required>
         </div>
-
         <div class="row">
           <div>
             <label for="weight">Peso (kg)</label>
@@ -96,18 +107,16 @@
             <input id="height" type="number" step="0.5" min="120" max="230" required>
           </div>
         </div>
-
         <div>
           <label for="activity">Attività</label>
           <select id="activity">
-            <option value="1.2">Sedentario (1–2 allenamenti/sett.)</option>
+            <option value="1.2">Sedentario (1–2 allen./sett.)</option>
             <option value="1.375">Leggero (2–3)</option>
             <option value="1.55">Moderato (3–5)</option>
             <option value="1.725">Intenso (6–7)</option>
             <option value="1.9">Atleta (2x/dì)</option>
           </select>
         </div>
-
         <div>
           <label for="goal">Obiettivo</label>
           <select id="goal">
@@ -116,99 +125,392 @@
             <option value="bulk">Massa (+300 kcal)</option>
           </select>
         </div>
-
         <div>
           <label for="prot">Proteine (g/kg)</label>
           <input id="prot" type="number" step="0.1" min="1.2" max="3.0" value="1.8">
         </div>
-
         <div>
           <label for="fat">Grassi (g/kg)</label>
           <input id="fat" type="number" step="0.1" min="0.6" max="1.5" value="0.8">
         </div>
-
-        <div style="grid-column:1/-1; display:flex; gap:10px; align-items:center; margin-top:8px;">
+        <div style="grid-column:1/-1;display:flex;gap:10px;align-items:center;margin-top:8px">
           <button type="submit">Calcola</button>
-          <span class="muted">I tuoi dati restano sul dispositivo.</span>
+          <span class="muted">I dati restano sul dispositivo.</span>
         </div>
       </form>
 
-      <div id="out" style="margin-top:14px; display:none;">
+      <div id="out-kcal" style="margin-top:14px; display:none;">
         <div class="results">
           <div class="tile"><h3>BMR</h3><div class="big" id="bmr">—</div><div class="muted">kcal</div></div>
           <div class="tile"><h3>TDEE</h3><div class="big" id="tdee">—</div><div class="muted">kcal</div></div>
           <div class="tile"><h3>Target</h3><div class="big" id="target">—</div><div class="muted">kcal/giorno</div></div>
         </div>
-
         <div class="results" style="margin-top:10px;">
           <div class="tile"><h3>Proteine</h3><div class="big" id="pG">—</div><div class="muted">g (≈ <span id="pK">—</span> kcal)</div></div>
           <div class="tile"><h3>Grassi</h3><div class="big" id="fG">—</div><div class="muted">g (≈ <span id="fK">—</span> kcal)</div></div>
           <div class="tile"><h3>Carboidrati</h3><div class="big" id="cG">—</div><div class="muted">g (≈ <span id="cK">—</span> kcal)</div></div>
         </div>
-
         <div class="footnote">
-          Formula Mifflin–St Jeor • Proteine 1.8 g/kg (modificabile), Grassi 0.8 g/kg (minimo) • Carbo = resto.
+          Formula Mifflin–St Jeor • Proteine 1.8 g/kg (modificabile), Grassi 0.8 g/kg • Carbo = resto.
         </div>
       </div>
     </section>
+
+    <!-- ANAMNESI RAPIDA & ALLENAMENTO (LOCALE) -->
+    <section class="card" id="train-card">
+      <h2>Anamnesi rapida & allenamento</h2>
+
+      <form id="train-form">
+        <div>
+          <label for="exp">Esperienza</label>
+          <select id="exp">
+            <option value="beginner">Principiante</option>
+            <option value="intermediate" selected>Intermedio</option>
+            <option value="advanced">Avanzato</option>
+          </select>
+        </div>
+        <div>
+          <label for="days">Giorni a settimana</label>
+          <select id="days"><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option></select>
+        </div>
+        <div>
+          <label for="goalT">Obiettivo</label>
+          <select id="goalT">
+            <option value="cut">Definizione</option>
+            <option value="maint">Mantenimento</option>
+            <option value="bulk" selected>Massa</option>
+            <option value="perf">Prestazione</option>
+          </select>
+        </div>
+        <div>
+          <label for="equip">Attrezzatura</label>
+          <select id="equip">
+            <option value="gym" selected>Palestra completa</option>
+            <option value="homeDB">Home (manubri/panca)</option>
+            <option value="bw">Solo corpo libero</option>
+          </select>
+        </div>
+        <div>
+          <label for="limits">Limitazioni</label>
+          <select id="limits">
+            <option value="none" selected>Nessuna</option>
+            <option value="shoulder">Spalla</option>
+            <option value="lowerback">Schiena bassa</option>
+            <option value="knee">Ginocchio</option>
+            <option value="elbow">Gomito/polso</option>
+          </select>
+        </div>
+        <div>
+          <label for="session">Tempo per seduta</label>
+          <select id="session">
+            <option value="30">~30 min</option>
+            <option value="45" selected>~45 min</option>
+            <option value="60">~60 min</option>
+            <option value="75">75+ min</option>
+          </select>
+        </div>
+        <div style="grid-column:1/-1">
+          <label for="pref">Preferenza split (opz.)</label>
+          <select id="pref">
+            <option value="">Automatica</option>
+            <option value="full">Full Body</option>
+            <option value="ul">Upper/Lower</option>
+            <option value="ppl">Push/Pull/Legs</option>
+            <option value="hyb4">Ibrido 4 giorni</option>
+          </select>
+        </div>
+        <div style="grid-column:1/-1;display:flex;gap:10px;align-items:center">
+          <button type="submit">Genera allenamento</button>
+          <button type="button" id="copyPlan" class="secondary">Copia piano</button>
+          <span class="muted">Preferenze salvate localmente.</span>
+        </div>
+      </form>
+
+      <div id="plan" style="margin-top:14px; display:none"></div>
+    </section>
+
+    <!-- ASSISTENTE AI -->
+    <section class="card" id="ai-card">
+      <h2>Assistente AI (piano personalizzato)</h2>
+
+      <form id="ai-form">
+        <div>
+          <label for="ai-exp">Esperienza</label>
+          <select id="ai-exp">
+            <option value="beginner">Principiante</option>
+            <option value="intermediate" selected>Intermedio</option>
+            <option value="advanced">Avanzato</option>
+          </select>
+        </div>
+        <div>
+          <label for="ai-days">Giorni a settimana</label>
+          <select id="ai-days"><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option></select>
+        </div>
+        <div>
+          <label for="ai-goal">Obiettivo</label>
+          <select id="ai-goal">
+            <option value="cut">Definizione</option>
+            <option value="maint">Mantenimento</option>
+            <option value="bulk" selected>Massa</option>
+            <option value="perf">Prestazione</option>
+          </select>
+        </div>
+        <div>
+          <label for="ai-equip">Attrezzatura</label>
+          <select id="ai-equip">
+            <option value="gym" selected>Palestra completa</option>
+            <option value="homeDB">Home (manubri/panca)</option>
+            <option value="bw">Solo corpo libero</option>
+          </select>
+        </div>
+        <div>
+          <label for="ai-limits">Limitazioni</label>
+          <select id="ai-limits">
+            <option value="none" selected>Nessuna</option>
+            <option value="shoulder">Spalla</option>
+            <option value="lowerback">Schiena bassa</option>
+            <option value="knee">Ginocchio</option>
+            <option value="elbow">Gomito/polso</option>
+          </select>
+        </div>
+        <div>
+          <label for="ai-min">Tempo per seduta</label>
+          <select id="ai-min">
+            <option value="30">~30 min</option>
+            <option value="45" selected>~45 min</option>
+            <option value="60">~60 min</option>
+            <option value="75">75+ min</option>
+          </select>
+        </div>
+        <div style="grid-column:1/-1">
+          <label for="ai-notes">Note / preferenze (opz.)</label>
+          <input id="ai-notes" placeholder="Esempio: preferisco bilanciere; no corsa; spalla sensibile…" />
+        </div>
+        <div style="grid-column:1/-1;display:flex;gap:10px;align-items:center">
+          <button type="submit">Genera con AI</button>
+          <button type="button" id="ai-copy" class="secondary">Copia risposta</button>
+          <span class="muted" id="ai-status"></span>
+        </div>
+      </form>
+
+      <div id="ai-out" class="tile mono" style="margin-top:12px; display:none"></div>
+    </section>
+
   </main>
 
+  <!-- ===== SCRIPTS ===== -->
   <script>
+    /* ---------- Calcolo nutrizione ---------- */
     const $ = id => document.getElementById(id);
-
-    // Carica eventuali dati salvati
     ["sex","age","weight","height","activity","goal","prot","fat"].forEach(k=>{
       const v = localStorage.getItem("af_"+k);
-      if(v!==null){ $(k).value = v; }
+      if(v!==null) $(k).value = v;
+      $(k).addEventListener("change", e => localStorage.setItem("af_"+k, e.target.value));
     });
 
-    // Salva on change
-    document.querySelectorAll("#form input,#form select").forEach(el=>{
-      el.addEventListener("change", ()=> localStorage.setItem("af_"+el.id, el.value));
-    });
-
-    $("form").addEventListener("submit", (e)=>{
+    $("form-kcal").addEventListener("submit", e=>{
       e.preventDefault();
-      // Leggi input
       const sex = $("sex").value;
       const age = +$("age").value;
-      const w = +$("weight").value;      // kg
-      const h = +$("height").value;      // cm
+      const w   = +$("weight").value;
+      const h   = +$("height").value;
       const act = +$("activity").value;
       const goal = $("goal").value;
-      const gProt = Math.max(1.2, +$("prot").value); // sicurezza limiti
+      const gProt = Math.max(1.2, +$("prot").value);
       const gFat  = Math.max(0.6, +$("fat").value);
-
       if(!age||!w||!h||!act) return;
 
-      // BMR (Mifflin–St Jeor)
+      // BMR Mifflin–St Jeor
       let bmr = 10*w + 6.25*h - 5*age + (sex==="M" ? 5 : -161);
       let tdee = bmr * act;
-
-      // Calorie target
       let delta = goal==="cut" ? -500 : goal==="bulk" ? +300 : 0;
-      let target = Math.max(1200, Math.round(tdee + delta)); // minimo sicurezza
+      let target = Math.max(1200, Math.round(tdee + delta));
 
-      // Macro
-      const pG = Math.round(gProt * w);          // g proteine
-      const fG = Math.round(gFat  * w);          // g grassi
+      const pG = Math.round(gProt * w);
+      const fG = Math.round(gFat  * w);
       const pK = pG * 4;
       const fK = fG * 9;
       const remK = Math.max(0, target - pK - fK);
-      const cG = Math.round(remK / 4);           // g carbo
+      const cG = Math.round(remK / 4);
       const cK = cG * 4;
 
-      // Output
       $("bmr").textContent = Math.round(bmr);
       $("tdee").textContent = Math.round(tdee);
       $("target").textContent = target;
-
       $("pG").textContent = pG; $("pK").textContent = pK;
       $("fG").textContent = fG; $("fK").textContent = fK;
       $("cG").textContent = cG; $("cK").textContent = cK;
+      $("out-kcal").style.display = "block";
+    });
 
-      $("out").style.display = "block";
-      window.scrollTo({ top: document.body.scrollHeight, behavior:"smooth" });
+    /* ---------- Allenamento locale ---------- */
+    const $g = id => document.getElementById(id);
+    ["exp","days","goalT","equip","limits","session","pref"].forEach(k=>{
+      const v = localStorage.getItem("af_t_"+k);
+      if(v!==null) $g(k).value = v;
+      $g(k).addEventListener("change", e => localStorage.setItem("af_t_"+k, e.target.value));
+    });
+
+    const DB = {
+      gym: {
+        push:["Panca piana bil.","Spinte manubri incl.","Military press","Croci cavi","Pushdown cavi","French press"],
+        pull:["Stacco rumeno","Rematore bil.","Lat machine","Pulley","Curl bil.","Curl manubri"],
+        legs:["Squat","Affondi","Pressa","Leg curl","Leg ext.","Polpacci seduto"],
+        upper:["Panca piana","Rematore bil.","Lat machine","Military press","Curl bil.","Pushdown"]
+      },
+      homeDB: {
+        push:["Spinte manubri piana","Spinte inclinate","Alzate laterali","Croci su panca","French press"],
+        pull:["Rematore manubri","Pullover manubrio","Curl manubri","Curl a martello","Rematore elastici"],
+        legs:["Goblet squat","Affondi camminati","Hip thrust","Leg curl elastici","Calf raises"],
+        upper:["Spinte piana","Rematore manubri","Pullover","Alzate laterali","Curl manubri","French press"]
+      },
+      bw: {
+        push:["Piegamenti","Pike push-up","Dip tra sedie","Diamond push-up"],
+        pull:["Trazioni (o inverted rows)","Rematore inverso","Curl elastici"],
+        legs:["Squat a corpo libero","Affondi","Hip thrust su sedia","Polpacci"],
+        upper:["Piegamenti","Trazioni/rows","Pike push-up","Hip thrust","Curl elastici","Dip"]
+      }
+    };
+
+    function filterByLimits(list, lim){
+      if(lim==="none") return list;
+      const bad = {
+        shoulder:["Military","Dip","Pike","Spinte sopra","Alzate"],
+        lowerback:["Stacco","Rematore bil.","Squat","Good morning"],
+        knee:["Squat","Affondi","Pressa","Leg ext."],
+        elbow:["French","Curl pesante","Dip"]
+      };
+      const words = (bad[lim]||[]).map(w=>w.toLowerCase());
+      return list.filter(ex => !words.some(w => ex.toLowerCase().includes(w)));
+    }
+    function chooseSplit(days, pref){
+      if(pref) return pref;
+      if(days<=3) return "full";
+      if(days===4) return "hyb4";
+      if(days===5) return "ul";
+      return "ppl";
+    }
+    function scheme(exp, goal, minutes){
+      let sets = exp==="beginner" ? 3 : exp==="intermediate" ? 3.5 : 4;
+      if(minutes<=45) sets = Math.max(3, Math.floor(sets));
+      const repRange = goal==="bulk" ? "6–10" : goal==="cut" ? "10–15" : "8–12";
+      return {sets: Math.round(sets), repRange, rpe: goal==="cut" ? "7–8" : "8–9"};
+    }
+    function buildPlan(params){
+      const {exp, days, goal, equip, limits, minutes, pref} = params;
+      const split = chooseSplit(days, pref);
+      const sc = scheme(exp, goal, minutes);
+      const ex = DB[equip];
+      const dayList = [];
+      const addDay = (title, blocks)=> dayList.push({title, blocks});
+      const pick = (arr, n)=> filterByLimits(arr, limits).slice(0, n);
+
+      if(split==="full"){
+        for(let d=1; d<=days; d++){
+          addDay(`Day ${d} · Full Body`, pick([ex.push[0], ex.pull[1], ex.legs[0], ex.push[2], ex.pull[0], ex.legs[1]].filter(Boolean), minutes<45?4:6));
+        }
+      } else if(split==="hyb4"){
+        addDay("Day 1 · Upper", pick(ex.upper, minutes<45?5:6));
+        addDay("Day 2 · Lower", pick(ex.legs, minutes<45?5:6));
+        addDay("Day 3 · Push",  pick(ex.push, minutes<45?5:6));
+        addDay("Day 4 · Pull",  pick(ex.pull, minutes<45?5:6));
+      } else if(split==="ul"){
+        for(let d=1; d<=days; d++){
+          const isUpper = d%2===1;
+          addDay(`Day ${d} · ${isUpper?"Upper":"Lower"}`, pick(isUpper?ex.upper:ex.legs, minutes<45?5:6));
+        }
+      } else { // ppl
+        const order = ["Push","Pull","Legs","Push","Pull","Legs"];
+        for(let i=0;i<days;i++){
+          const type = order[i];
+          addDay(`Day ${i+1} · ${type}`, pick(ex[type.toLowerCase()], minutes<45?5:6));
+        }
+      }
+
+      let html = `<div class="muted" style="margin-bottom:8px">
+        Split: <b>${split.toUpperCase()}</b> • Serie: <b>${sc.sets}</b> • Reps: <b>${sc.repRange}</b> • RPE: <b>${sc.rpe}</b>
+      </div><div class="results" style="grid-template-columns:1fr;gap:10px">`;
+      dayList.forEach(d=>{
+        html += `<div class="tile" style="text-align:left">
+          <h3 style="font-size:16px;margin:0 0 6px">${d.title}</h3>
+          <ol style="margin:0;padding-left:18px">` +
+          d.blocks.map(b=>`<li>${b} — ${sc.sets}×${sc.repRange} (RPE ${sc.rpe})</li>`).join("") +
+          `</ol></div>`;
+      });
+      html += `</div>
+      <div class="footnote">
+        • Riscaldamento: 5–8’ cardio leggero + 1–2 serie di avvicinamento.<br>
+        • Progressione: quando completi il top del range in tutte le serie, +2.5–5% carico.<br>
+        • Tecnica & ROM completi > carico. Tieni 1–3 RIR.
+      </div>`;
+      return {html, split: split.toUpperCase(), scheme: sc, days: dayList};
+    }
+
+    $g("train-form").addEventListener("submit", e=>{
+      e.preventDefault();
+      const params = {
+        exp: $g("exp").value, days: +$g("days").value, goal: $g("goalT").value,
+        equip: $g("equip").value, limits: $g("limits").value, minutes: +$g("session").value,
+        pref: $g("pref").value
+      };
+      const plan = buildPlan(params);
+      const box = $g("plan");
+      box.innerHTML = plan.html; box.style.display = "block";
+
+      const plain = [
+        `Astra Fit — Piano ${plan.split}`,
+        `Serie: ${plan.scheme.sets} | Reps: ${plan.scheme.repRange} | RPE: ${plan.scheme.rpe}`,
+        `Obiettivo: ${params.goal} • Giorni: ${params.days} • Attrezzatura: ${params.equip} • Limiti: ${params.limits}`, ""
+      ].concat(plan.days.map(d => `${d.title}\n` + d.blocks.map(b => `- ${b} — ${plan.scheme.sets}×${plan.scheme.repRange} (RPE ${plan.scheme.rpe})`).join("\n"))).join("\n");
+      localStorage.setItem("af_plan_text", plain);
+    });
+
+    $g("copyPlan").addEventListener("click", async ()=>{
+      const txt = localStorage.getItem("af_plan_text") || "Genera prima un piano.";
+      try { await navigator.clipboard.writeText(txt); alert("Piano copiato ✅"); }
+      catch { alert(txt); }
+    });
+
+    /* ---------- Assistente AI (endpoint serverless) ---------- */
+    // ⬇️ Metti qui l'URL del tuo Worker/Function (es. https://astrafit-ai.tuo.workers.dev/plan)
+    const API_URL = "https://TUO-ENDPOINT-AI/plan";
+
+    const g = id => document.getElementById(id);
+    g("ai-form").addEventListener("submit", async e=>{
+      e.preventDefault();
+      const payload = {
+        exp: g("ai-exp").value, days:+g("ai-days").value, goal:g("ai-goal").value,
+        equip:g("ai-equip").value, limits:g("ai-limits").value, minutes:+g("ai-min").value,
+        notes:g("ai-notes").value||""
+      };
+      // aggiungi nutrizione (se calcolata)
+      payload.nutrition = {
+        bmr: $("#bmr")?.textContent || "", tdee: $("#tdee")?.textContent || "",
+        target: $("#target")?.textContent || "", pG: $("#pG")?.textContent || "",
+        fG: $("#fG")?.textContent || "", cG: $("#cG")?.textContent || ""
+      };
+
+      g("ai-status").textContent = "Sto preparando il piano…";
+      g("ai-out").style.display = "none"; g("ai-out").textContent = "";
+
+      try{
+        if(!API_URL || API_URL.includes("TUO-ENDPOINT")) throw new Error("Configura l'API_URL.");
+        const res = await fetch(API_URL, { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(payload) });
+        if(!res.ok) throw new Error("Server non disponibile");
+        const data = await res.json();
+        const text = (data.plan || data.message || "Nessuna risposta.").trim();
+        g("ai-out").textContent = text; g("ai-out").style.display = "block";
+        g("ai-status").textContent = "Pronto ✅";
+        localStorage.setItem("af_ai_plan", text);
+      }catch(err){
+        g("ai-status").textContent = "Errore: " + err.message;
+      }
+    });
+
+    g("ai-copy").addEventListener("click", async ()=>{
+      const txt = g("ai-out").textContent || localStorage.getItem("af_ai_plan") || "Genera prima il piano.";
+      try { await navigator.clipboard.writeText(txt); alert("Risposta copiata ✅"); }
+      catch { alert(txt); }
     });
   </script>
 </body>
