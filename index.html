@@ -1,532 +1,154 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Astra Fit</title>
-
-  <!-- Icona iPhone (metti un 180x180 in root con questo nome) -->
-  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=1" />
-
-  <!-- iOS fullscreen + tema -->
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="AstraFit" />
-  <meta name="theme-color" content="#000000" />
-  <meta name="color-scheme" content="light" />
-
-  <!-- PWA (opzionale) -->
-  <link rel="manifest" href="manifest.webmanifest" />
-  <script>
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("sw.js").catch(()=>{});
-    }
-  </script>
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Astra Fit AI</title>
   <style>
-    :root { --bg:#fff; --card:#fff; --text:#000; --muted:#666; --accent:#000; }
-    * { box-sizing: border-box; }
-    html,body{ height:100%; margin:0; }
-    body{
-      background:var(--bg); color:var(--text);
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-      padding:24px; display:grid; place-items:start center;
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f5f7fa;
+      color: #222;
     }
-    .wrap{ width:100%; max-width:880px; }
-    .card{ background:var(--card); border-radius:20px; padding:22px;
-           box-shadow:0 10px 30px rgba(0,0,0,.08); margin-bottom:18px; }
-    .hero{ text-align:center; padding:18px; }
-    .logo{
-      width:72px; height:72px; border-radius:18px; background:#000; margin:0 auto 10px;
-      display:grid; place-items:center; color:#fff; font-weight:900; font-size:30px;
+    h1 {
+      text-align: center;
+      color: #1a73e8;
     }
-    h1{ margin:8px 0 6px; font-size:28px; }
-    h2{ margin:0 0 10px; font-size:20px; }
-    p{ margin:6px 0; color:#222; }
-    .muted{ color:var(--muted); font-size:12px; }
-    form{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-    @media (max-width:720px){ form{ grid-template-columns:1fr; } }
-    label{ font-size:13px; color:#333; display:block; margin-bottom:6px; }
-    input,select{
-      width:100%; padding:10px 12px; border-radius:12px; border:1px solid #e5e5e5; font-size:16px;
-      background:#fff; color:#000;
+    .section {
+      background: #fff;
+      padding: 20px;
+      margin: 20px auto;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      max-width: 600px;
     }
-    .row{ display:flex; gap:10px; }
-    .row>*{ flex:1; }
-    button{
-      background:var(--accent); color:#fff; border:0; padding:12px 16px; border-radius:14px;
-      font-weight:700; cursor:pointer;
+    input, select, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 16px;
     }
-    .secondary{ background:#444; }
-    .results{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:12px; }
-    @media (max-width:720px){ .results{ grid-template-columns:1fr; } }
-    .tile{ border:1px solid #eee; border-radius:14px; padding:14px; text-align:center; }
-    .tile h3{ margin:4px 0 6px; font-size:14px; color:#444; font-weight:600; }
-    .tile .big{ font-size:22px; font-weight:800; }
-    .footnote{ font-size:12px; color:#555; margin-top:8px; }
-    .mono{ white-space:pre-wrap; text-align:left; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    button {
+      background: #1a73e8;
+      color: #fff;
+      cursor: pointer;
+      border: none;
+    }
+    button:hover {
+      background: #1558b0;
+    }
+    #ai-response, #calorie-result, #workout-result {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 5px;
+      background: #eef3fb;
+      white-space: pre-wrap;
+    }
   </style>
 </head>
 <body>
-  <main class="wrap">
+  <h1>⚡ Astra Fit AI</h1>
 
-    <!-- HERO -->
-    <section class="card hero">
-      <div class="logo">★</div>
-      <h1>Astra Fit</h1>
-      <p>Calcolo del fabbisogno, macro, allenamento e assistenza AI.</p>
-      <p class="muted">© Astra Fit • a cura di Fabio Muraca</p>
-    </section>
+  <!-- AI COACH -->
+  <div class="section">
+    <h2>🤖 Coach AI</h2>
+    <textarea id="ai-prompt" rows="4" placeholder="Scrivi la tua domanda di fitness..."></textarea>
+    <button onclick="askAI()">Chiedi</button>
+    <div id="ai-response"></div>
+  </div>
 
-    <!-- CALCOLO CALORIE + MACRO -->
-    <section class="card" id="calc-card">
-      <h2>Calcolo calorie & macro</h2>
-      <form id="form-kcal">
-        <div>
-          <label for="sex">Sesso</label>
-          <select id="sex"><option value="M">Maschio</option><option value="F">Femmina</option></select>
-        </div>
-        <div>
-          <label for="age">Età (anni)</label>
-          <input id="age" type="number" min="10" max="100" required>
-        </div>
-        <div class="row">
-          <div>
-            <label for="weight">Peso (kg)</label>
-            <input id="weight" type="number" step="0.1" min="30" max="300" required>
-          </div>
-          <div>
-            <label for="height">Altezza (cm)</label>
-            <input id="height" type="number" step="0.5" min="120" max="230" required>
-          </div>
-        </div>
-        <div>
-          <label for="activity">Attività</label>
-          <select id="activity">
-            <option value="1.2">Sedentario (1–2 allen./sett.)</option>
-            <option value="1.375">Leggero (2–3)</option>
-            <option value="1.55">Moderato (3–5)</option>
-            <option value="1.725">Intenso (6–7)</option>
-            <option value="1.9">Atleta (2x/dì)</option>
-          </select>
-        </div>
-        <div>
-          <label for="goal">Obiettivo</label>
-          <select id="goal">
-            <option value="cut">Definizione (-500 kcal)</option>
-            <option value="maint">Mantenimento (0)</option>
-            <option value="bulk">Massa (+300 kcal)</option>
-          </select>
-        </div>
-        <div>
-          <label for="prot">Proteine (g/kg)</label>
-          <input id="prot" type="number" step="0.1" min="1.2" max="3.0" value="1.8">
-        </div>
-        <div>
-          <label for="fat">Grassi (g/kg)</label>
-          <input id="fat" type="number" step="0.1" min="0.6" max="1.5" value="0.8">
-        </div>
-        <div style="grid-column:1/-1;display:flex;gap:10px;align-items:center;margin-top:8px">
-          <button type="submit">Calcola</button>
-          <span class="muted">I dati restano sul dispositivo.</span>
-        </div>
-      </form>
+  <!-- CALCOLO CALORIE -->
+  <div class="section">
+    <h2>🔥 Calcolatore Calorie</h2>
+    <input type="number" id="peso" placeholder="Peso (kg)">
+    <input type="number" id="altezza" placeholder="Altezza (cm)">
+    <input type="number" id="eta" placeholder="Età">
+    <select id="sesso">
+      <option value="M">Uomo</option>
+      <option value="F">Donna</option>
+    </select>
+    <select id="attivita">
+      <option value="1.2">Sedentario</option>
+      <option value="1.375">Leggero</option>
+      <option value="1.55">Moderato</option>
+      <option value="1.725">Intenso</option>
+      <option value="1.9">Molto intenso</option>
+    </select>
+    <button onclick="calcolaCalorie()">Calcola</button>
+    <div id="calorie-result"></div>
+  </div>
 
-      <div id="out-kcal" style="margin-top:14px; display:none;">
-        <div class="results">
-          <div class="tile"><h3>BMR</h3><div class="big" id="bmr">—</div><div class="muted">kcal</div></div>
-          <div class="tile"><h3>TDEE</h3><div class="big" id="tdee">—</div><div class="muted">kcal</div></div>
-          <div class="tile"><h3>Target</h3><div class="big" id="target">—</div><div class="muted">kcal/giorno</div></div>
-        </div>
-        <div class="results" style="margin-top:10px;">
-          <div class="tile"><h3>Proteine</h3><div class="big" id="pG">—</div><div class="muted">g (≈ <span id="pK">—</span> kcal)</div></div>
-          <div class="tile"><h3>Grassi</h3><div class="big" id="fG">—</div><div class="muted">g (≈ <span id="fK">—</span> kcal)</div></div>
-          <div class="tile"><h3>Carboidrati</h3><div class="big" id="cG">—</div><div class="muted">g (≈ <span id="cK">—</span> kcal)</div></div>
-        </div>
-        <div class="footnote">
-          Formula Mifflin–St Jeor • Proteine 1.8 g/kg (modificabile), Grassi 0.8 g/kg • Carbo = resto.
-        </div>
-      </div>
-    </section>
+  <!-- ALLENAMENTO -->
+  <div class="section">
+    <h2>💪 Genera Allenamento</h2>
+    <select id="livello">
+      <option value="principiante">Principiante</option>
+      <option value="intermedio">Intermedio</option>
+      <option value="avanzato">Avanzato</option>
+    </select>
+    <button onclick="generaAllenamento()">Genera</button>
+    <div id="workout-result"></div>
+  </div>
 
-    <!-- ANAMNESI RAPIDA & ALLENAMENTO (LOCALE) -->
-    <section class="card" id="train-card">
-      <h2>Anamnesi rapida & allenamento</h2>
-      <form id="train-form">
-        <div>
-          <label for="exp">Esperienza</label>
-          <select id="exp">
-            <option value="beginner">Principiante</option>
-            <option value="intermediate" selected>Intermedio</option>
-            <option value="advanced">Avanzato</option>
-          </select>
-        </div>
-        <div>
-          <label for="days">Giorni a settimana</label>
-          <select id="days"><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option></select>
-        </div>
-        <div>
-          <label for="goalT">Obiettivo</label>
-          <select id="goalT">
-            <option value="cut">Definizione</option>
-            <option value="maint">Mantenimento</option>
-            <option value="bulk" selected>Massa</option>
-            <option value="perf">Prestazione</option>
-          </select>
-        </div>
-        <div>
-          <label for="equip">Attrezzatura</label>
-          <select id="equip">
-            <option value="gym" selected>Palestra completa</option>
-            <option value="homeDB">Home (manubri/panca)</option>
-            <option value="bw">Solo corpo libero</option>
-          </select>
-        </div>
-        <div>
-          <label for="limits">Limitazioni</label>
-          <select id="limits">
-            <option value="none" selected>Nessuna</option>
-            <option value="shoulder">Spalla</option>
-            <option value="lowerback">Schiena bassa</option>
-            <option value="knee">Ginocchio</option>
-            <option value="elbow">Gomito/polso</option>
-          </select>
-        </div>
-        <div>
-          <label for="session">Tempo per seduta</label>
-          <select id="session">
-            <option value="30">~30 min</option>
-            <option value="45" selected>~45 min</option>
-            <option value="60">~60 min</option>
-            <option value="75">75+ min</option>
-          </select>
-        </div>
-        <div style="grid-column:1/-1">
-          <label for="pref">Preferenza split (opz.)</label>
-          <select id="pref">
-            <option value="">Automatica</option>
-            <option value="full">Full Body</option>
-            <option value="ul">Upper/Lower</option>
-            <option value="ppl">Push/Pull/Legs</option>
-            <option value="hyb4">Ibrido 4 giorni</option>
-          </select>
-        </div>
-        <div style="grid-column:1/-1;display:flex;gap:10px;align-items:center">
-          <button type="submit">Genera allenamento</button>
-          <button type="button" id="copyPlan" class="secondary">Copia piano</button>
-        </div>
-      </form>
-      <div id="plan" style="margin-top:14px; display:none"></div>
-    </section>
-
-    <!-- ASSISTENTE AI -->
-    <section class="card" id="ai-card">
-      <h2>Assistente AI (piano personalizzato)</h2>
-      <form id="ai-form">
-        <div>
-          <label for="ai-exp">Esperienza</label>
-          <select id="ai-exp">
-            <option value="beginner">Principiante</option>
-            <option value="intermediate" selected>Intermedio</option>
-            <option value="advanced">Avanzato</option>
-          </select>
-        </div>
-        <div>
-          <label for="ai-days">Giorni a settimana</label>
-          <select id="ai-days"><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option></select>
-        </div>
-        <div>
-          <label for="ai-goal">Obiettivo</label>
-          <select id="ai-goal">
-            <option value="cut">Definizione</option>
-            <option value="maint">Mantenimento</option>
-            <option value="bulk" selected>Massa</option>
-            <option value="perf">Prestazione</option>
-          </select>
-        </div>
-        <div>
-          <label for="ai-equip">Attrezzatura</label>
-          <select id="ai-equip">
-            <option value="gym" selected>Palestra completa</option>
-            <option value="homeDB">Home (manubri/panca)</option>
-            <option value="bw">Solo corpo libero</option>
-          </select>
-        </div>
-        <div>
-          <label for="ai-limits">Limitazioni</label>
-          <select id="ai-limits">
-            <option value="none" selected>Nessuna</option>
-            <option value="shoulder">Spalla</option>
-            <option value="lowerback">Schiena bassa</option>
-            <option value="knee">Ginocchio</option>
-            <option value="elbow">Gomito/polso</option>
-          </select>
-        </div>
-        <div>
-          <label for="ai-min">Tempo per seduta</label>
-          <select id="ai-min">
-            <option value="30">~30 min</option>
-            <option value="45" selected>~45 min</option>
-            <option value="60">~60 min</option>
-            <option value="75">75+ min</option>
-          </select>
-        </div>
-        <div style="grid-column:1/-1">
-          <label for="ai-notes">Note / preferenze (opz.)</label>
-          <input id="ai-notes" placeholder="Es: preferisco bilanciere; no corsa; spalla sensibile…" />
-        </div>
-        <div style="grid-column:1/-1;display:flex;gap:10px;align-items:center">
-          <button type="submit">Genera con AI</button>
-          <button type="button" id="ai-copy" class="secondary">Copia risposta</button>
-          <span class="muted" id="ai-status"></span>
-        </div>
-      </form>
-      <div id="ai-out" class="tile mono" style="margin-top:12px; display:none"></div>
-    </section>
-
-  </main>
-
-  <!-- ================= SCRIPTS ================= -->
   <script>
-    const $ = id => document.getElementById(id);
-
-    /* ---------- Calcolo nutrizione ---------- */
-    ["sex","age","weight","height","activity","goal","prot","fat"].forEach(k=>{
-      const v = localStorage.getItem("af_"+k);
-      if(v!==null) $(k).value = v;
-      $(k).addEventListener("change", e => localStorage.setItem("af_"+k, e.target.value));
-    });
-
-    $("form-kcal").addEventListener("submit", e=>{
-      e.preventDefault();
-      const sex = $("sex").value;
-      const age = +$("age").value;
-      const w   = +$("weight").value;
-      const h   = +$("height").value;
-      const act = +$("activity").value;
-      const goal = $("goal").value;
-      const gProt = Math.max(1.2, +$("prot").value);
-      const gFat  = Math.max(0.6, +$("fat").value);
-      if(!age||!w||!h||!act) return;
-
-      // Mifflin–St Jeor
-      let bmr = 10*w + 6.25*h - 5*age + (sex==="M" ? 5 : -161);
-      let tdee = bmr * act;
-      let delta = goal==="cut" ? -500 : goal==="bulk" ? +300 : 0;
-      let target = Math.max(1200, Math.round(tdee + delta));
-
-      const pG = Math.round(gProt * w);
-      const fG = Math.round(gFat  * w);
-      const pK = pG * 4;
-      const fK = fG * 9;
-      const remK = Math.max(0, target - pK - fK);
-      const cG = Math.round(remK / 4);
-      const cK = cG * 4;
-
-      $("bmr").textContent = Math.round(bmr);
-      $("tdee").textContent = Math.round(tdee);
-      $("target").textContent = target;
-      $("pG").textContent = pG; $("pK").textContent = pK;
-      $("fG").textContent = fG; $("fK").textContent = fK;
-      $("cG").textContent = cG; $("cK").textContent = cK;
-      $("out-kcal").style.display = "block";
-    });
-
-    /* ---------- Allenamento locale ---------- */
-    const $g = id => document.getElementById(id);
-    ["exp","days","goalT","equip","limits","session","pref"].forEach(k=>{
-      const v = localStorage.getItem("af_t_"+k);
-      if(v!==null) $g(k).value = v;
-      $g(k).addEventListener("change", e => localStorage.setItem("af_t_"+k, e.target.value));
-    });
-
-    const DB = {
-      gym: {
-        push:["Panca piana bil.","Spinte manubri incl.","Military press","Croci cavi","Pushdown cavi","French press"],
-        pull:["Stacco rumeno","Rematore bil.","Lat machine","Pulley","Curl bil.","Curl manubri"],
-        legs:["Squat","Affondi","Pressa","Leg curl","Leg ext.","Polpacci seduto"],
-        upper:["Panca piana","Rematore bil.","Lat machine","Military press","Curl bil.","Pushdown"]
-      },
-      homeDB: {
-        push:["Spinte manubri piana","Spinte inclinate","Alzate laterali","Croci su panca","French press"],
-        pull:["Rematore manubri","Pullover manubrio","Curl manubri","Curl a martello","Rematore elastici"],
-        legs:["Goblet squat","Affondi camminati","Hip thrust","Leg curl elastici","Calf raises"],
-        upper:["Spinte piana","Rematore manubri","Pullover","Alzate laterali","Curl manubri","French press"]
-      },
-      bw: {
-        push:["Piegamenti","Pike push-up","Dip tra sedie","Diamond push-up"],
-        pull:["Trazioni (o inverted rows)","Rematore inverso","Curl elastici"],
-        legs:["Squat a corpo libero","Affondi","Hip thrust su sedia","Polpacci"],
-        upper:["Piegamenti","Trazioni/rows","Pike push-up","Hip thrust","Curl elastici","Dip"]
-      }
-    };
-
-    function filterByLimits(list, lim){
-      if(lim==="none") return list;
-      const bad = {
-        shoulder:["Military","Dip","Pike","Spinte sopra","Alzate"],
-        lowerback:["Stacco","Rematore bil.","Squat","Good morning"],
-        knee:["Squat","Affondi","Pressa","Leg ext."],
-        elbow:["French","Curl pesante","Dip"]
-      };
-      const words = (bad[lim]||[]).map(w=>w.toLowerCase());
-      return list.filter(ex => !words.some(w => ex.toLowerCase().includes(w)));
-    }
-    function chooseSplit(days, pref){
-      if(pref) return pref;
-      if(days<=3) return "full";
-      if(days===4) return "hyb4";
-      if(days===5) return "ul";
-      return "ppl";
-    }
-    function scheme(exp, goal, minutes){
-      let sets = exp==="beginner" ? 3 : exp==="intermediate" ? 3.5 : 4;
-      if(minutes<=45) sets = Math.max(3, Math.floor(sets));
-      const repRange = goal==="bulk" ? "6–10" : goal==="cut" ? "10–15" : "8–12";
-      return {sets: Math.round(sets), repRange, rpe: goal==="cut" ? "7–8" : "8–9"};
-    }
-    function buildPlan(params){
-      const {exp, days, goal, equip, limits, minutes, pref} = params;
-      const split = chooseSplit(days, pref);
-      const sc = scheme(exp, goal, minutes);
-      const ex = DB[equip];
-      const dayList = [];
-      const addDay = (title, blocks)=> dayList.push({title, blocks});
-      const pick = (arr, n)=> filterByLimits(arr, limits).slice(0, n);
-
-      if(split==="full"){
-        for(let d=1; d<=days; d++){
-          addDay(`Day ${d} · Full Body`, pick([ex.push[0], ex.pull[1], ex.legs[0], ex.push[2], ex.pull[0], ex.legs[1]].filter(Boolean), minutes<45?4:6));
-        }
-      } else if(split==="hyb4"){
-        addDay("Day 1 · Upper", pick(ex.upper, minutes<45?5:6));
-        addDay("Day 2 · Lower", pick(ex.legs, minutes<45?5:6));
-        addDay("Day 3 · Push",  pick(ex.push, minutes<45?5:6));
-        addDay("Day 4 · Pull",  pick(ex.pull, minutes<45?5:6));
-      } else if(split==="ul"){
-        for(let d=1; d<=days; d++){
-          const isUpper = d%2===1;
-          addDay(`Day ${d} · ${isUpper?"Upper":"Lower"}`, pick(isUpper?ex.upper:ex.legs, minutes<45?5:6));
-        }
-      } else { // ppl
-        const order = ["Push","Pull","Legs","Push","Pull","Legs"];
-        for(let i=0;i<days;i++){
-          const type = order[i];
-          addDay(`Day ${i+1} · ${type}`, pick(ex[type.toLowerCase()], minutes<45?5:6));
-        }
-      }
-
-      let html = `<div class="muted" style="margin-bottom:8px">
-        Split: <b>${split.toUpperCase()}</b> • Serie: <b>${sc.sets}</b> • Reps: <b>${sc.repRange}</b> • RPE: <b>${sc.rpe}</b>
-      </div><div class="results" style="grid-template-columns:1fr;gap:10px">`;
-      dayList.forEach(d=>{
-        html += `<div class="tile" style="text-align:left">
-          <h3 style="font-size:16px;margin:0 0 6px">${d.title}</h3>
-          <ol style="margin:0;padding-left:18px">` +
-          d.blocks.map(b=>`<li>${b} — ${sc.sets}×${sc.repRange} (RPE ${sc.rpe})</li>`).join("") +
-          `</ol></div>`;
-      });
-      html += `</div>
-      <div class="footnote">
-        • Riscaldamento: 5–8’ cardio leggero + 1–2 serie di avvicinamento.<br>
-        • Progressione: quando completi il top del range in tutte le serie, +2.5–5% carico.<br>
-        • Tecnica & ROM completi > carico. Tieni 1–3 RIR.
-      </div>`;
-      return {html, split: split.toUpperCase(), scheme: sc, days: dayList};
-    }
-
-    $g("train-form").addEventListener("submit", e=>{
-      e.preventDefault();
-      const params = {
-        exp: $g("exp").value, days: +$g("days").value, goal: $g("goalT").value,
-        equip: $g("equip").value, limits: $g("limits").value, minutes: +$g("session").value,
-        pref: $g("pref").value
-      };
-      const plan = buildPlan(params);
-      const box = $g("plan");
-      box.innerHTML = plan.html; box.style.display = "block";
-
-      const plain = [
-        `Astra Fit — Piano ${plan.split}`,
-        `Serie: ${plan.scheme.sets} | Reps: ${plan.scheme.repRange} | RPE: ${plan.scheme.rpe}`,
-        `Obiettivo: ${params.goal} • Giorni: ${params.days} • Attrezzatura: ${params.equip} • Limiti: ${params.limits}`, ""
-      ].concat(plan.days.map(d => `${d.title}\n` + d.blocks.map(b => `- ${b} — ${plan.scheme.sets}×${plan.scheme.repRange} (RPE ${plan.scheme.rpe})`).join("\n"))).join("\n");
-      localStorage.setItem("af_plan_text", plain);
-    });
-
-    $g("copyPlan").addEventListener("click", async ()=>{
-      const txt = localStorage.getItem("af_plan_text") || "Genera prima un piano.";
-      try { await navigator.clipboard.writeText(txt); alert("Piano copiato ✅"); }
-      catch { alert(txt); }
-    });
-
-    /* ---------- Assistente AI via Cloudflare Worker ---------- */
-    const API_URL = "https://astra-fit-ai.fabiomuraca.workers.dev"; // <-- il tuo Worker
-
-    const g = id => document.getElementById(id);
-    g("ai-form").addEventListener("submit", async e=>{
-      e.preventDefault();
-
-      // Compongo un prompt “pulito” dai dati dell’utente + (se disponibili) i dati nutrizionali
-      const p = {
-        exp: g("ai-exp").value,
-        days:+g("ai-days").value,
-        goal:g("ai-goal").value,
-        equip:g("ai-equip").value,
-        limits:g("ai-limits").value,
-        minutes:+g("ai-min").value,
-        notes:g("ai-notes").value||""
-      };
-      const nutri = {
-        bmr: $("#bmr")?.textContent || "", tdee: $("#tdee")?.textContent || "",
-        target: $("#target")?.textContent || "", pG: $("#pG")?.textContent || "",
-        fG: $("#fG")?.textContent || "", cG: $("#cG")?.textContent || ""
-      };
-
-      const prompt =
-`Sei un coach di forza/ricomposizione. Genera un piano in italiano, pratico e strutturato.
-Dati:
-- Esperienza: ${p.exp}
-- Giorni/settimana: ${p.days}
-- Obiettivo: ${p.goal}
-- Attrezzatura: ${p.equip}
-- Limitazioni: ${p.limits}
-- Minuti per seduta: ${p.minutes}
-- Note: ${p.notes || "—"}
-- Nutrizione (se presente): BMR ${nutri.bmr||"?"}, TDEE ${nutri.tdee||"?"}, Target ${nutri.target||"?"}, Macro P${nutri.pG||"?"} F${nutri.fG||"?"} C${nutri.cG||"?"}
-
-Istruzioni:
-- Scegli split coerente (Full/UL/PPL/4d ibrido).
-- Per ogni giorno: 5–6 esercizi (4 se tempo=30’), con serie×reps e RPE.
-- Adatta agli eventuali limiti (evita esercizi controindicati).
-- Aggiungi riscaldamento, progressione carico, note tecniche.
-- Output in sezioni chiare. Solo testo.`;
-
-      g("ai-status").textContent = "Sto preparando il piano…";
-      g("ai-out").style.display = "none"; g("ai-out").textContent = "";
-
-      try{
-        const res = await fetch(API_URL, {
-          method:"POST",
-          headers:{ "Content-Type":"application/json" },
+    // CHIAMATA AL WORKER (AI)
+    async function askAI() {
+      const prompt = document.getElementById("ai-prompt").value;
+      const resBox = document.getElementById("ai-response");
+      resBox.textContent = "⏳ Sto pensando...";
+      try {
+        const res = await fetch("https://astra-fit-ai.fabiomuraca.workers.dev/api", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ prompt })
         });
-        if(!res.ok) throw new Error("Server non disponibile");
         const data = await res.json();
-        const text = (data.reply || "Nessuna risposta.").trim();
-        g("ai-out").textContent = text; g("ai-out").style.display = "block";
-        g("ai-status").textContent = "Pronto ✅";
-        localStorage.setItem("af_ai_plan", text);
-      }catch(err){
-        g("ai-status").textContent = "Errore: " + err.message;
+        resBox.textContent = data.reply || "Errore nella risposta.";
+      } catch (err) {
+        resBox.textContent = "⚠️ Errore: " + err.message;
       }
-    });
+    }
 
-    g("ai-copy").addEventListener("click", async ()=>{
-      const txt = g("ai-out").textContent || localStorage.getItem("af_ai_plan") || "Genera prima il piano.";
-      try { await navigator.clipboard.writeText(txt); alert("Risposta copiata ✅"); }
-      catch { alert(txt); }
-    });
+    // CALCOLATORE CALORIE
+    function calcolaCalorie() {
+      const peso = parseFloat(document.getElementById("peso").value);
+      const altezza = parseFloat(document.getElementById("altezza").value);
+      const eta = parseInt(document.getElementById("eta").value);
+      const sesso = document.getElementById("sesso").value;
+      const attivita = parseFloat(document.getElementById("attivita").value);
+
+      if (!peso || !altezza || !eta) {
+        document.getElementById("calorie-result").textContent = "Inserisci tutti i dati.";
+        return;
+      }
+
+      let bmr = (sesso === "M")
+        ? 10 * peso + 6.25 * altezza - 5 * eta + 5
+        : 10 * peso + 6.25 * altezza - 5 * eta - 161;
+
+      let tdee = bmr * attivita;
+      document.getElementById("calorie-result").textContent =
+        `Fabbisogno giornaliero: ~${Math.round(tdee)} kcal`;
+    }
+
+    // GENERATORE ALLENAMENTO
+    function generaAllenamento() {
+      const livello = document.getElementById("livello").value;
+      let piano = "";
+
+      if (livello === "principiante") {
+        piano = `Full body 3x/settimana:\n- Squat 3x10\n- Panca piana 3x10\n- Rematore 3x10\n- Plank 3x30s`;
+      } else if (livello === "intermedio") {
+        piano = `Split 4x/settimana:\n- Push: Panca, Spinte, Tricipiti\n- Pull: Trazioni, Rematore, Bicipiti\n- Gambe: Squat, Affondi, Leg curl\n- Core: Addome, Plank, Russian twist`;
+      } else {
+        piano = `Split avanzato 5-6x/settimana:\n- Petto/Tricipiti\n- Schiena/Bicipiti\n- Gambe\n- Spalle\n- Richiami/HIIT`;
+      }
+
+      document.getElementById("workout-result").textContent = piano;
+    }
   </script>
 </body>
 </html>
