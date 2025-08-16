@@ -3,211 +3,133 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Astra Fit</title>
+  <title>AstraFit</title>
+  <link rel="stylesheet" href="style.css">
   <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f5f5f7;
-      color: #111;
-    }
-    header {
-      text-align: center;
-      padding: 2rem 1rem 1rem;
-    }
-    header h1 {
-      font-size: 1.8rem;
-      font-weight: 700;
-      margin: 0.5rem 0 0.3rem;
-    }
-    header p {
-      font-size: 0.95rem;
-      color: #444;
-      margin: 0;
-    }
-    .card {
-      background: #fff;
-      border-radius: 16px;
-      padding: 1.5rem;
-      margin: 1rem auto;
-      max-width: 600px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-    }
-    h2 {
-      font-size: 1.2rem;
-      margin-bottom: 1rem;
-    }
-    input, select, textarea, button {
-      width: 100%;
-      padding: 0.75rem;
-      margin: 0.4rem 0;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      font-size: 1rem;
-    }
-    button {
-      background: #111;
-      color: #fff;
-      font-weight: 600;
-      border: none;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #333;
-    }
-    .result {
-      margin-top: 1rem;
-      padding: 1rem;
-      background: #f5f5f7;
-      border-radius: 8px;
-      font-size: 0.95rem;
-      color: #111;
-      white-space: pre-line;
-    }
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f4f4f9; }
+    header { background: #111; color: #fff; padding: 1rem; text-align: center; }
+    section { padding: 1.5rem; margin: 1rem; background: #fff; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);}
+    h2 { margin-top: 0; }
+    input, select, button, textarea { width: 100%; padding: 0.7rem; margin: 0.5rem 0; border-radius: 6px; border: 1px solid #ccc; }
+    button { background: #111; color: #fff; border: none; cursor: pointer; font-weight: bold; }
+    button:hover { background: #333; }
+    .chat-box { border: 1px solid #ccc; height: 200px; overflow-y: auto; padding: 0.5rem; background: #fafafa; border-radius: 6px; }
+    .message { margin: 0.3rem 0; }
+    .user { font-weight: bold; color: #111; }
+    .ai { color: #0077cc; }
   </style>
 </head>
 <body>
 
   <header>
-    <div style="font-size:2.5rem;">⭐</div>
-    <h1>Astra Fit</h1>
-    <p>Calcolo del fabbisogno, macro, allenamento e assistenza AI.</p>
-    <p style="font-size:0.85rem; color:#666;">© Astra Fit • a cura di Fabio Muraca</p>
+    <h1>AstraFit 🚀</h1>
+    <p>Il tuo assistente fitness personale</p>
   </header>
 
-  <!-- Coach AI -->
-  <div class="card">
-    <h2>🤖 Coach AI</h2>
-    <textarea id="userQuestion" placeholder="Scrivi la tua domanda di fitness..."></textarea>
-    <button onclick="askAI()">Chiedi</button>
-    <div id="aiResponse" class="result" style="display:none;"></div>
-  </div>
+  <!-- Calcolo calorie -->
+  <section>
+    <h2>Calcola le tue calorie</h2>
+    <form id="calorie-form">
+      <input type="number" id="peso" placeholder="Peso (kg)" required>
+      <input type="number" id="altezza" placeholder="Altezza (cm)" required>
+      <input type="number" id="eta" placeholder="Età" required>
+      <select id="genere">
+        <option value="maschio">Maschio</option>
+        <option value="femmina">Femmina</option>
+      </select>
+      <select id="attivita">
+        <option value="1.2">Sedentario</option>
+        <option value="1.55">Moderato</option>
+        <option value="1.9">Intenso</option>
+      </select>
+      <button type="submit">Calcola</button>
+    </form>
+    <p id="risultato-calorie"></p>
+  </section>
 
-  <!-- Calcolatore Calorie & Macro -->
-  <div class="card">
-    <h2>🔥 Calcolo calorie & macro</h2>
-    <label>Sesso</label>
-    <select id="gender">
-      <option value="male">Maschio</option>
-      <option value="female">Femmina</option>
-    </select>
-    <label>Età (anni)</label>
-    <input type="number" id="age">
-    <label>Peso (kg)</label>
-    <input type="number" id="weight">
-    <label>Altezza (cm)</label>
-    <input type="number" id="height">
-    <label>Attività</label>
-    <select id="activity">
-      <option value="1.2">Sedentario (1–2 allen./sett.)</option>
-      <option value="1.55">Moderato (3–4 allen./sett.)</option>
-      <option value="1.75">Intenso (5–6 allen./sett.)</option>
-    </select>
-    <label>Obiettivo</label>
-    <select id="goal">
-      <option value="-500">Definizione (-500 kcal)</option>
-      <option value="0">Mantenimento</option>
-      <option value="300">Massa (+300 kcal)</option>
-    </select>
-    <label>Proteine (g/kg)</label>
-    <input type="number" id="protein" value="2">
-    <button onclick="calculateCalories()">Calcola</button>
-    <div id="calorieResult" class="result" style="display:none;"></div>
-  </div>
+  <!-- Training -->
+  <section>
+    <h2>Piano di allenamento</h2>
+    <form id="training-form">
+      <input type="text" id="obiettivo" placeholder="Obiettivo (es: massa, definizione)" required>
+      <input type="number" id="giorni" placeholder="Giorni a settimana" required>
+      <button type="submit">Genera piano</button>
+    </form>
+    <div id="risultato-training"></div>
+  </section>
 
-  <!-- Training Planner -->
-  <div class="card">
-    <h2>🏋️ Training Planner</h2>
-    <p style="font-size:0.9rem; color:#444;">Genera un piano di allenamento personalizzato con l'AI in base ai tuoi dati.</p>
-    <button onclick="generateTraining()">Genera piano</button>
-    <div id="trainingPlan" class="result" style="display:none;"></div>
-  </div>
+  <!-- AI Assistant -->
+  <section>
+    <h2>Chat con Astra AI 🤖</h2>
+    <div class="chat-box" id="chat-box"></div>
+    <textarea id="user-input" placeholder="Scrivi la tua domanda..."></textarea>
+    <button id="send-btn">Invia</button>
+  </section>
 
   <script>
-    // === Coach AI ===
-    async function askAI() {
-      const question = document.getElementById("userQuestion").value.trim();
-      const responseDiv = document.getElementById("aiResponse");
-      if (!question) return;
-      responseDiv.style.display = "block";
-      responseDiv.textContent = "Sto pensando...";
-      try {
-        const res = await fetch("https://astra-fit-ai.fabiomuraca.workers.dev/ask", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ question })
-        });
-        const data = await res.json();
-        responseDiv.textContent = data.answer || "Errore nella risposta.";
-      } catch {
-        responseDiv.textContent = "Errore di connessione.";
-      }
-    }
-
-    // === Calcolatore ===
-    function calculateCalories() {
-      const gender = document.getElementById("gender").value;
-      const age = parseInt(document.getElementById("age").value);
-      const weight = parseFloat(document.getElementById("weight").value);
-      const height = parseFloat(document.getElementById("height").value);
-      const activity = parseFloat(document.getElementById("activity").value);
-      const goal = parseInt(document.getElementById("goal").value);
-      const protein = parseFloat(document.getElementById("protein").value);
-
-      if (!age || !weight || !height) {
-        alert("Compila tutti i campi!");
-        return;
-      }
-
+    // Calorie
+    document.getElementById("calorie-form").addEventListener("submit", e => {
+      e.preventDefault();
+      const peso = parseFloat(document.getElementById("peso").value);
+      const altezza = parseFloat(document.getElementById("altezza").value);
+      const eta = parseInt(document.getElementById("eta").value);
+      const genere = document.getElementById("genere").value;
+      const attivita = parseFloat(document.getElementById("attivita").value);
       let bmr;
-      if (gender === "male") {
-        bmr = 10 * weight + 6.25 * height - 5 * age + 5;
+      if (genere === "maschio") {
+        bmr = 10*peso + 6.25*altezza - 5*eta + 5;
       } else {
-        bmr = 10 * weight + 6.25 * height - 5 * age - 161;
+        bmr = 10*peso + 6.25*altezza - 5*eta - 161;
       }
+      const tdee = Math.round(bmr * attivita);
+      document.getElementById("risultato-calorie").textContent = "Fabbisogno giornaliero: " + tdee + " kcal";
+    });
 
-      const tdee = bmr * activity;
-      const calories = tdee + goal;
-      const proteins = protein * weight;
-      const fats = (0.25 * calories) / 9;
-      const carbs = (calories - (proteins * 4 + fats * 9)) / 4;
+    // Training
+    document.getElementById("training-form").addEventListener("submit", e => {
+      e.preventDefault();
+      const obiettivo = document.getElementById("obiettivo").value;
+      const giorni = document.getElementById("giorni").value;
+      document.getElementById("risultato-training").textContent =
+        `Piano generato: ${giorni} sessioni settimanali per obiettivo ${obiettivo}.`;
+    });
 
-      document.getElementById("calorieResult").style.display = "block";
-      document.getElementById("calorieResult").innerHTML = `
-        🔹 Fabbisogno: <b>${Math.round(calories)}</b> kcal<br>
-        🍗 Proteine: <b>${Math.round(proteins)}</b> g<br>
-        🥑 Grassi: <b>${Math.round(fats)}</b> g<br>
-        🍚 Carboidrati: <b>${Math.round(carbs)}</b> g
-      `;
-    }
+    // Chat AI
+    const chatBox = document.getElementById("chat-box");
+    document.getElementById("send-btn").addEventListener("click", async () => {
+      const input = document.getElementById("user-input");
+      const userMsg = input.value.trim();
+      if (!userMsg) return;
 
-    // === Training Planner con AI ===
-    async function generateTraining() {
-      const age = document.getElementById("age").value;
-      const weight = document.getElementById("weight").value;
-      const activity = document.getElementById("activity").options[document.getElementById("activity").selectedIndex].text;
-      const goal = document.getElementById("goal").options[document.getElementById("goal").selectedIndex].text;
+      // mostra messaggio utente
+      const userDiv = document.createElement("div");
+      userDiv.className = "message user";
+      userDiv.textContent = "👤: " + userMsg;
+      chatBox.appendChild(userDiv);
 
-      const prompt = `Genera un piano di allenamento settimanale per una persona di ${age} anni, ${weight} kg, livello: ${activity}, obiettivo: ${goal}. Usa un formato semplice e leggibile con giorni ed esercizi.`;
+      // reset input
+      input.value = "";
 
-      const trainingDiv = document.getElementById("trainingPlan");
-      trainingDiv.style.display = "block";
-      trainingDiv.textContent = "Creo il tuo piano...";
+      // chiamata al Worker
+      const aiDiv = document.createElement("div");
+      aiDiv.className = "message ai";
+      aiDiv.textContent = "🤖: ...";
+      chatBox.appendChild(aiDiv);
 
       try {
-        const res = await fetch("https://astra-fit-ai.fabiomuraca.workers.dev/ask", {
+        const res = await fetch("https://astra-fit-ai.fabiomuraca.workers.dev/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ question: prompt })
+          body: JSON.stringify({ message: userMsg })
         });
         const data = await res.json();
-        trainingDiv.textContent = data.answer || "Errore nella risposta.";
-      } catch {
-        trainingDiv.textContent = "Errore di connessione.";
+        aiDiv.textContent = "🤖: " + (data.reply || "Errore risposta AI");
+      } catch (err) {
+        aiDiv.textContent = "🤖: Errore di connessione al server";
       }
-    }
-  </script>
 
+      chatBox.scrollTop = chatBox.scrollHeight;
+    });
+  </script>
 </body>
 </html>
