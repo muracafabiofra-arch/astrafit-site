@@ -3,151 +3,139 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Astra Fit AI</title>
+  <title>⚡️ Astra Fit AI</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 20px;
-      background: #f5f7fa;
-      color: #222;
+      background: #f5f7fb;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
     }
     h1 {
       text-align: center;
-      color: #1a73e8;
+      color: #0056d6;
     }
-    .section {
-      background: #fff;
+    .card {
+      background: white;
+      border-radius: 12px;
       padding: 20px;
-      margin: 20px auto;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      max-width: 600px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
-    input, select, textarea, button {
+    .card h2 {
+      margin-top: 0;
+    }
+    textarea, input, select {
       width: 100%;
       padding: 10px;
-      margin: 8px 0;
-      border-radius: 5px;
-      border: 1px solid #ccc;
+      margin-top: 8px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
       font-size: 16px;
     }
     button {
-      background: #1a73e8;
-      color: #fff;
-      cursor: pointer;
+      width: 100%;
+      padding: 12px;
+      margin-top: 12px;
+      background: #007bff;
+      color: white;
       border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
     }
     button:hover {
-      background: #1558b0;
+      background: #0056b3;
     }
-    #ai-response, #calorie-result, #workout-result {
-      margin-top: 15px;
+    .response {
+      margin-top: 12px;
       padding: 10px;
-      border-radius: 5px;
-      background: #eef3fb;
+      background: #f1f1f1;
+      border-radius: 6px;
+      min-height: 40px;
       white-space: pre-wrap;
     }
   </style>
 </head>
 <body>
-  <h1>⚡ Astra Fit AI</h1>
+  <div class="container">
+    <h1>⚡️ Astra Fit AI</h1>
 
-  <!-- AI COACH -->
-  <div class="section">
-    <h2>🤖 Coach AI</h2>
-    <textarea id="ai-prompt" rows="4" placeholder="Scrivi la tua domanda di fitness..."></textarea>
-    <button onclick="askAI()">Chiedi</button>
-    <div id="ai-response"></div>
-  </div>
+    <!-- Coach AI -->
+    <div class="card">
+      <h2>🤖 Coach AI</h2>
+      <textarea id="userInput" placeholder="Scrivi la tua domanda di fitness..."></textarea>
+      <button onclick="askAI()">Chiedi</button>
+      <div id="aiResponse" class="response"></div>
+    </div>
 
-  <!-- CALCOLO CALORIE -->
-  <div class="section">
-    <h2>🔥 Calcolatore Calorie</h2>
-    <input type="number" id="peso" placeholder="Peso (kg)">
-    <input type="number" id="altezza" placeholder="Altezza (cm)">
-    <input type="number" id="eta" placeholder="Età">
-    <select id="sesso">
-      <option value="M">Uomo</option>
-      <option value="F">Donna</option>
-    </select>
-    <select id="attivita">
-      <option value="1.2">Sedentario</option>
-      <option value="1.375">Leggero</option>
-      <option value="1.55">Moderato</option>
-      <option value="1.725">Intenso</option>
-      <option value="1.9">Molto intenso</option>
-    </select>
-    <button onclick="calcolaCalorie()">Calcola</button>
-    <div id="calorie-result"></div>
-  </div>
-
-  <!-- ALLENAMENTO -->
-  <div class="section">
-    <h2>💪 Genera Allenamento</h2>
-    <select id="livello">
-      <option value="principiante">Principiante</option>
-      <option value="intermedio">Intermedio</option>
-      <option value="avanzato">Avanzato</option>
-    </select>
-    <button onclick="generaAllenamento()">Genera</button>
-    <div id="workout-result"></div>
+    <!-- Calcolatore Calorie -->
+    <div class="card">
+      <h2>🔥 Calcolatore Calorie</h2>
+      <input type="number" id="peso" placeholder="Peso (kg)">
+      <input type="number" id="altezza" placeholder="Altezza (cm)">
+      <input type="number" id="eta" placeholder="Età">
+      <select id="sesso">
+        <option value="uomo">Uomo</option>
+        <option value="donna">Donna</option>
+      </select>
+      <input type="number" id="attivita" placeholder="Livello attività (1.2 - 1.9)">
+      <button onclick="calcolaCalorie()">Calcola</button>
+      <div id="calorieResult" class="response"></div>
+    </div>
   </div>
 
   <script>
-    // CHIAMATA AL WORKER (AI)
+    // Funzione AI
     async function askAI() {
-      const prompt = document.getElementById("ai-prompt").value;
-      const resBox = document.getElementById("ai-response");
-      resBox.textContent = "⏳ Sto pensando...";
+      const input = document.getElementById("userInput").value;
+      const responseBox = document.getElementById("aiResponse");
+      responseBox.textContent = "⏳ Sto pensando...";
+
       try {
-        const res = await fetch("https://astra-fit-ai.fabiomuraca.workers.dev/api", {
+        const res = await fetch("https://astra-fit-ai.fabiomuraca.workers.dev/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ prompt })
+          body: JSON.stringify({ query: input })
         });
+
+        if (!res.ok) throw new Error("Errore server");
+
         const data = await res.json();
-        resBox.textContent = data.reply || "Errore nella risposta.";
+        responseBox.textContent = data.answer || "⚠️ Nessuna risposta ricevuta.";
       } catch (err) {
-        resBox.textContent = "⚠️ Errore: " + err.message;
+        responseBox.textContent = "❌ Errore nella risposta.";
       }
     }
 
-    // CALCOLATORE CALORIE
+    // Calcolatore calorie
     function calcolaCalorie() {
       const peso = parseFloat(document.getElementById("peso").value);
       const altezza = parseFloat(document.getElementById("altezza").value);
-      const eta = parseInt(document.getElementById("eta").value);
+      const eta = parseFloat(document.getElementById("eta").value);
       const sesso = document.getElementById("sesso").value;
       const attivita = parseFloat(document.getElementById("attivita").value);
 
-      if (!peso || !altezza || !eta) {
-        document.getElementById("calorie-result").textContent = "Inserisci tutti i dati.";
+      if (isNaN(peso) || isNaN(altezza) || isNaN(eta) || isNaN(attivita)) {
+        document.getElementById("calorieResult").textContent = "⚠️ Compila tutti i campi.";
         return;
       }
 
-      let bmr = (sesso === "M")
-        ? 10 * peso + 6.25 * altezza - 5 * eta + 5
-        : 10 * peso + 6.25 * altezza - 5 * eta - 161;
-
-      let tdee = bmr * attivita;
-      document.getElementById("calorie-result").textContent =
-        `Fabbisogno giornaliero: ~${Math.round(tdee)} kcal`;
-    }
-
-    // GENERATORE ALLENAMENTO
-    function generaAllenamento() {
-      const livello = document.getElementById("livello").value;
-      let piano = "";
-
-      if (livello === "principiante") {
-        piano = `Full body 3x/settimana:\n- Squat 3x10\n- Panca piana 3x10\n- Rematore 3x10\n- Plank 3x30s`;
-      } else if (livello === "intermedio") {
-        piano = `Split 4x/settimana:\n- Push: Panca, Spinte, Tricipiti\n- Pull: Trazioni, Rematore, Bicipiti\n- Gambe: Squat, Affondi, Leg curl\n- Core: Addome, Plank, Russian twist`;
+      let bmr;
+      if (sesso === "uomo") {
+        bmr = 88.36 + (13.4 * peso) + (4.8 * altezza) + (5.7 * eta);
       } else {
-        piano = `Split avanzato 5-6x/settimana:\n- Petto/Tricipiti\n- Schiena/Bicipiti\n- Gambe\n- Spalle\n- Richiami/HIIT`;
+        bmr = 447.6 + (9.2 * peso) + (3.1 * altezza) - (4.3 * eta);
       }
 
-      document.getElementById("workout-result").textContent = piano;
+      const tdee = bmr * attivita;
+      document.getElementById("calorieResult").textContent = 
+        `🍽️ Fabbisogno calorico giornaliero: ~${Math.round(tdee)} kcal`;
     }
   </script>
 </body>
