@@ -5,18 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Astra Fit</title>
 
-  <!-- Dì al browser che TUTTI i percorsi relativi partono da GitHub Pages -->
-  <base href="https://muracafabiofra-arch.github.io/astrafit-site/">
-
-  <!-- Icona Home iPhone (il file è in root della repo) -->
+  <!-- Icona Home iPhone (file in root accanto a index.html) -->
   <link rel="apple-touch-icon" href="apple-touch-icon.png?v=7" />
 
   <!-- iOS web-app style -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="AstraFit" />
-
-  <!-- Forza modalità chiara -->
   <meta name="theme-color" content="#000000" />
   <meta name="color-scheme" content="light" />
 
@@ -29,10 +24,14 @@
       display:grid; place-items:center; padding:24px;
     }
     .wrap { max-width:720px; width:100%; }
-    .card { background:var(--card); border-radius:20px; padding:28px 22px;
-            box-shadow:0 10px 30px rgba(0,0,0,.08); text-align:center; }
-    .icon { width:88px; height:88px; margin:0 auto 14px; border-radius:20px; background:#000;
-            display:grid; place-items:center; }
+    .card {
+      background:var(--card); border-radius:20px; padding:28px 22px;
+      box-shadow:0 10px 30px rgba(0,0,0,.08); text-align:center;
+    }
+    .icon {
+      width:88px; height:88px; margin:0 auto 14px; border-radius:20px; background:#000;
+      display:grid; place-items:center;
+    }
     .icon img { width:64px; height:64px; display:block; }
     h1 { margin:8px 0 6px; font-size:28px; }
     p { margin:6px 0; }
@@ -43,13 +42,35 @@
   <main class="wrap">
     <section class="card">
       <div class="icon">
-        <!-- NOTA: niente "public/". Con <base> basta "icons/..." -->
-        <img src="icons/astrafit-icon-192.png" alt="Astra Fit" width="64" height="64" />
+        <!-- lo script sotto imposterà lo src corretto -->
+        <img id="appIcon" alt="Astra Fit" width="64" height="64" />
       </div>
       <h1>Astra Fit</h1>
       <p>Calcolo del fabbisogno calorico, macro e training con AI.</p>
       <p class="small">© Astra Fit • a cura di Fabio Muraca</p>
     </section>
   </main>
+
+  <script>
+    // Prova entrambi i percorsi (con/senza "public") e usa il primo che risponde 200
+    (async () => {
+      const base = "https://muracafabiofra-arch.github.io/astrafit-site/";
+      const candidates = [
+        "public/icons/astrafit-icon-192.png",
+        "icons/astrafit-icon-192.png",
+        base + "public/icons/astrafit-icon-192.png",
+        base + "icons/astrafit-icon-192.png"
+      ];
+      const img = document.getElementById("appIcon");
+      for (const url of candidates) {
+        try {
+          const r = await fetch(url, { method: "HEAD", cache: "no-store" });
+          if (r.ok) { img.src = url; return; }
+        } catch (e) {}
+      }
+      // Fallback: un cerchietto bianco se non trova nulla
+      img.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Crect width='64' height='64' rx='12' fill='%23fff'/%3E%3C/svg%3E";
+    })();
+  </script>
 </body>
 </html>
