@@ -2,145 +2,77 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Astra Fit</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <title>Astra Fit AI</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f7f7f7; padding: 20px; }
+    h1 { color: #222; }
+    .box { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    input, textarea, button { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc; }
+    button { background: #222; color: white; cursor: pointer; }
+    button:hover { background: #444; }
+    .chat-box { max-height: 250px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; border-radius: 5px; background: #fff; }
+    .user { font-weight: bold; color: #333; }
+    .bot { color: #0077cc; }
+  </style>
 </head>
-<body class="bg-gray-100 text-gray-900">
+<body>
 
-  <!-- HEADER -->
-  <div class="max-w-xl mx-auto text-center my-8">
-    <div class="bg-white shadow rounded-2xl p-6">
-      <img src="favicon.png" alt="Logo" class="w-12 mx-auto mb-3">
-      <h1 class="text-2xl font-bold">Astra Fit</h1>
-      <p class="text-gray-600">Calcolo del fabbisogno, macro, allenamento e assistenza AI.</p>
-      <p class="text-sm text-gray-500 mt-1">© Astra Fit • a cura di Fabio Muraca</p>
-    </div>
+  <h1>Astra Fit AI 💪🤖</h1>
+
+  <!-- Generatore piano di allenamento -->
+  <div class="box">
+    <h2>Piano di allenamento</h2>
+    <input type="text" id="goal" placeholder="Obiettivo (es: massa, definizione)">
+    <input type="number" id="days" placeholder="Giorni a settimana">
+    <button onclick="generatePlan()">Genera piano</button>
+    <pre id="planResult"></pre>
   </div>
 
-  <!-- CALCOLO MACRO -->
-  <div class="max-w-xl mx-auto bg-white shadow rounded-2xl p-6 mb-8">
-    <h2 class="text-xl font-bold mb-4">Calcolo calorie & macro</h2>
-    <form id="macro-form" class="space-y-3">
-      <select id="sesso" class="w-full p-2 border rounded">
-        <option>Maschio</option>
-        <option>Femmina</option>
-      </select>
-      <input type="number" id="eta" placeholder="Età (anni)" class="w-full p-2 border rounded">
-      <div class="flex space-x-2">
-        <input type="number" id="peso" placeholder="Peso (kg)" class="w-1/2 p-2 border rounded">
-        <input type="number" id="altezza" placeholder="Altezza (cm)" class="w-1/2 p-2 border rounded">
-      </div>
-      <select id="attivita" class="w-full p-2 border rounded">
-        <option>Sedentario (1–2 allen./sett.)</option>
-        <option>Moderato (3–4 allen./sett.)</option>
-        <option>Intenso (5–6 allen./sett.)</option>
-      </select>
-      <select id="obiettivo" class="w-full p-2 border rounded">
-        <option>Definizione (-500 kcal)</option>
-        <option>Mantenimento</option>
-        <option>Massa (+300 kcal)</option>
-      </select>
-      <input type="number" id="proteine" placeholder="Proteine (g/kg)" class="w-full p-2 border rounded" value="2">
-      <button type="submit" class="w-full bg-black text-white py-2 rounded">Calcola</button>
-    </form>
-    <div id="macro-risultato" class="mt-4 text-sm text-gray-700"></div>
+  <!-- Chat con Astra -->
+  <div class="box">
+    <h2>Chat con Astra AI</h2>
+    <div class="chat-box" id="chatBox"></div>
+    <textarea id="userInput" placeholder="Scrivi la tua domanda..."></textarea>
+    <button onclick="sendMessage()">Invia</button>
   </div>
 
-  <!-- PIANO DI ALLENAMENTO -->
-  <div class="max-w-xl mx-auto bg-white shadow rounded-2xl p-6 mb-8">
-    <h2 class="text-xl font-bold mb-4">Piano di allenamento</h2>
-    <input type="text" id="obiettivo-piano" placeholder="Obiettivo (massa, definizione)" class="w-full p-2 border rounded mb-2">
-    <input type="number" id="giorni" placeholder="Giorni a settimana" class="w-full p-2 border rounded mb-2">
-    <button onclick="generaPiano()" class="w-full bg-black text-white py-2 rounded">Genera piano</button>
-    <div id="piano-risultato" class="mt-4 text-sm text-gray-700"></div>
-  </div>
-
-  <!-- CHAT AI -->
-  <div class="max-w-xl mx-auto bg-white shadow rounded-2xl p-6">
-    <h2 class="text-xl font-bold mb-4">Chat con Astra AI 🤖</h2>
-    <div id="chat-box" class="border p-3 h-64 overflow-y-auto rounded mb-3 bg-gray-50 text-sm"></div>
-    <div class="flex space-x-2">
-      <input type="text" id="user-input" placeholder="Scrivi la tua domanda..." class="flex-1 p-2 border rounded">
-      <button onclick="sendMessage()" class="bg-black text-white px-4 py-2 rounded">Invia</button>
-    </div>
-  </div>
-
-  <!-- SCRIPT -->
   <script>
-    // Calcolo macro
-    document.getElementById("macro-form").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const peso = parseFloat(document.getElementById("peso").value);
-      const altezza = parseFloat(document.getElementById("altezza").value);
-      const eta = parseFloat(document.getElementById("eta").value);
-      const sesso = document.getElementById("sesso").value;
-      const attivita = document.getElementById("attivita").value;
-      const obiettivo = document.getElementById("obiettivo").value;
-      const proteine = parseFloat(document.getElementById("proteine").value);
+    const API_BASE = "https://astra-fit-ai.fabiomuraca.workers.dev";
 
-      if (!peso || !altezza || !eta) {
-        document.getElementById("macro-risultato").innerText = "Inserisci tutti i dati.";
-        return;
-      }
+    // Genera piano di allenamento
+    async function generatePlan() {
+      const goal = document.getElementById("goal").value;
+      const days = document.getElementById("days").value;
 
-      let bmr = sesso === "Maschio"
-        ? 10 * peso + 6.25 * altezza - 5 * eta + 5
-        : 10 * peso + 6.25 * altezza - 5 * eta - 161;
+      const res = await fetch(`${API_BASE}/plan`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ goal, days })
+      });
 
-      let fattore = attivita.includes("Moderato") ? 1.55 : attivita.includes("Intenso") ? 1.75 : 1.2;
-      let tdee = bmr * fattore;
-
-      if (obiettivo.includes("Definizione")) tdee -= 500;
-      if (obiettivo.includes("Massa")) tdee += 300;
-
-      let kcal = Math.round(tdee);
-      let prot = Math.round(proteine * peso);
-      let grassi = Math.round((0.9 * peso));
-      let carbo = Math.round((kcal - (prot * 4 + grassi * 9)) / 4);
-
-      document.getElementById("macro-risultato").innerHTML = `
-        🔹 Calorie: <b>${kcal}</b> kcal<br>
-        🔹 Proteine: <b>${prot}</b> g<br>
-        🔹 Grassi: <b>${grassi}</b> g<br>
-        🔹 Carboidrati: <b>${carbo}</b> g
-      `;
-    });
-
-    // Piano allenamento (mock semplice)
-    function generaPiano() {
-      const obiettivo = document.getElementById("obiettivo-piano").value;
-      const giorni = document.getElementById("giorni").value;
-      document.getElementById("piano-risultato").innerText =
-        `📋 Piano per ${giorni} giorni/sett. con obiettivo ${obiettivo}.`;
+      const data = await res.json();
+      document.getElementById("planResult").innerText = data.response || "Errore nel piano.";
     }
 
-    // Chat AI con Worker
+    // Chat con Astra
     async function sendMessage() {
-      const input = document.getElementById("user-input");
-      const message = input.value.trim();
-      if (!message) return;
+      const input = document.getElementById("userInput").value;
+      if (!input) return;
 
-      const chatBox = document.getElementById("chat-box");
-      chatBox.innerHTML += `<p>👤: ${message}</p>`;
-      input.value = "";
+      const chatBox = document.getElementById("chatBox");
+      chatBox.innerHTML += `<div class="user">Tu: ${input}</div>`;
 
-      try {
-        const response = await fetch("https://astra-fit-ai.fabiomuraca.workers.dev/api/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message })
-        });
-        const data = await response.json();
-        if (data.response) {
-          chatBox.innerHTML += `<p>🤖: ${data.response}</p>`;
-        } else {
-          chatBox.innerHTML += `<p>🤖: Errore nella risposta AI</p>`;
-        }
-      } catch (err) {
-        chatBox.innerHTML += `<p>🤖: Errore di connessione al Worker</p>`;
-      }
+      const res = await fetch(`${API_BASE}/api/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: input })
+      });
 
+      const data = await res.json();
+      const reply = data.response || "Errore risposta AI.";
+
+      chatBox.innerHTML += `<div class="bot">Astra: ${reply}</div>`;
+      document.getElementById("userInput").value = "";
       chatBox.scrollTop = chatBox.scrollHeight;
     }
   </script>
