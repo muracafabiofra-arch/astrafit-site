@@ -1,81 +1,107 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <title>Astra Fit AI</title>
-  <style>
-    body { font-family: Arial, sans-serif; background: #f7f7f7; padding: 20px; }
-    h1 { color: #222; }
-    .box { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    input, textarea, button { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc; }
-    button { background: #222; color: white; cursor: pointer; }
-    button:hover { background: #444; }
-    .chat-box { max-height: 250px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; border-radius: 5px; background: #fff; }
-    .user { font-weight: bold; color: #333; }
-    .bot { color: #0077cc; }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AstraFit</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <header>
+    <h1>🌟 AstraFit</h1>
+    <p>Calorie · Training · AI Coach</p>
+  </header>
 
-  <h1>Astra Fit AI 💪🤖</h1>
+  <!-- Calcolo Calorie -->
+  <section id="calorie">
+    <h2>Calcolo Calorie</h2>
+    <form id="calorieForm">
+      <label>Età: <input type="number" id="age" required></label><br>
+      <label>Peso (kg): <input type="number" id="weight" required></label><br>
+      <label>Altezza (cm): <input type="number" id="height" required></label><br>
+      <label>Genere:
+        <select id="gender">
+          <option value="male">Uomo</option>
+          <option value="female">Donna</option>
+        </select>
+      </label><br>
+      <label>Attività:
+        <select id="activity">
+          <option value="1.2">Sedentario</option>
+          <option value="1.375">Leggero</option>
+          <option value="1.55">Moderato</option>
+          <option value="1.725">Intenso</option>
+        </select>
+      </label><br>
+      <button type="submit">Calcola</button>
+    </form>
+    <p id="calorieResult"></p>
+  </section>
 
-  <!-- Generatore piano di allenamento -->
-  <div class="box">
-    <h2>Piano di allenamento</h2>
-    <input type="text" id="goal" placeholder="Obiettivo (es: massa, definizione)">
-    <input type="number" id="days" placeholder="Giorni a settimana">
-    <button onclick="generatePlan()">Genera piano</button>
-    <pre id="planResult"></pre>
-  </div>
+  <!-- Training -->
+  <section id="training">
+    <h2>Piano Allenamento</h2>
+    <button onclick="generateTraining()">Genera Allenamento</button>
+    <div id="trainingResult"></div>
+  </section>
 
-  <!-- Chat con Astra -->
-  <div class="box">
-    <h2>Chat con Astra AI</h2>
-    <div class="chat-box" id="chatBox"></div>
-    <textarea id="userInput" placeholder="Scrivi la tua domanda..."></textarea>
+  <!-- AI Coach -->
+  <section id="ai">
+    <h2>🤖 AI Coach</h2>
+    <textarea id="userMessage" placeholder="Scrivi la tua domanda..."></textarea><br>
     <button onclick="sendMessage()">Invia</button>
-  </div>
+    <div id="aiResponse"></div>
+  </section>
 
   <script>
-    const API_BASE = "https://astra-fit-ai.fabiomuraca.workers.dev";
+    // Calorie
+    document.getElementById("calorieForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const age = parseInt(document.getElementById("age").value);
+      const weight = parseFloat(document.getElementById("weight").value);
+      const height = parseFloat(document.getElementById("height").value);
+      const gender = document.getElementById("gender").value;
+      const activity = parseFloat(document.getElementById("activity").value);
 
-    // Genera piano di allenamento
-    async function generatePlan() {
-      const goal = document.getElementById("goal").value;
-      const days = document.getElementById("days").value;
+      let bmr = gender === "male"
+        ? 88.36 + (13.4 * weight) + (4.8 * height) - (5.7 * age)
+        : 447.6 + (9.2 * weight) + (3.1 * height) - (4.3 * age);
 
-      const res = await fetch(`${API_BASE}/plan`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ goal, days })
-      });
+      let calories = bmr * activity;
+      document.getElementById("calorieResult").innerText = 
+        `Il tuo fabbisogno calorico è circa ${Math.round(calories)} kcal/giorno.`;
+    });
 
-      const data = await res.json();
-      document.getElementById("planResult").innerText = data.response || "Errore nel piano.";
+    // Training (demo base)
+    function generateTraining() {
+      document.getElementById("trainingResult").innerHTML = `
+        <ul>
+          <li>Squat 3x10</li>
+          <li>Panca piana 3x8</li>
+          <li>Lat Machine 3x10</li>
+          <li>Alzate laterali 3x12</li>
+        </ul>
+      `;
     }
 
-    // Chat con Astra
+    // AI
     async function sendMessage() {
-      const input = document.getElementById("userInput").value;
-      if (!input) return;
+      const msg = document.getElementById("userMessage").value;
+      const responseDiv = document.getElementById("aiResponse");
+      responseDiv.innerText = "⏳ Attendi risposta...";
 
-      const chatBox = document.getElementById("chatBox");
-      chatBox.innerHTML += `<div class="user">Tu: ${input}</div>`;
-
-      const res = await fetch(`${API_BASE}/api/chat`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: input })
-      });
-
-      const data = await res.json();
-      const reply = data.response || "Errore risposta AI.";
-
-      chatBox.innerHTML += `<div class="bot">Astra: ${reply}</div>`;
-      document.getElementById("userInput").value = "";
-      chatBox.scrollTop = chatBox.scrollHeight;
+      try {
+        const res = await fetch("https://astra-fit-ai.fabiomuraca.workers.dev/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: msg })
+        });
+        const data = await res.json();
+        responseDiv.innerText = data.reply || "Errore nella risposta.";
+      } catch (err) {
+        responseDiv.innerText = "❌ Server non disponibile.";
+      }
     }
   </script>
-
 </body>
 </html>
