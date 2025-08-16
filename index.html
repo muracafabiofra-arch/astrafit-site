@@ -1,107 +1,247 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AstraFit</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Astra Fit</title>
+  <meta name="theme-color" content="#ffffff" />
+  <style>
+    :root{
+      --bg:#f2f3f5; --card:#ffffff; --text:#101114; --muted:#666; --brand:#0b5cff;
+      --ring:0 10px 30px rgba(0,0,0,.08);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; color:var(--text)}
+    .wrap{max-width:980px;margin:24px auto;padding:16px}
+    .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--ring);padding:20px;margin:14px auto}
+    h1,h2{margin:0 0 10px}
+    h1{font-size:34px;line-height:1.1}
+    h2{font-size:22px}
+    p{margin:8px 0;color:var(--muted)}
+    .hero{display:grid;grid-template-columns:72px 1fr;gap:16px;align-items:center}
+    .logo{width:72px;height:72px;border-radius:20px;background:#111;display:grid;place-items:center;color:#fff;font-size:34px}
+    .grid{display:grid;gap:14px}
+    @media (min-width:860px){ .grid-2{grid-template-columns:1fr 1fr} }
+    label{font-size:14px;color:#333;margin:6px 0;display:block}
+    input,select,textarea{
+      width:100%;padding:12px 14px;border:1px solid #e2e4e8;border-radius:12px;background:#fff;font-size:16px;
+    }
+    textarea{min-height:96px;resize:vertical}
+    button{
+      width:100%;padding:12px 16px;border:0;border-radius:12px;background:var(--brand);color:#fff;font-weight:700;
+      cursor:pointer;transition:.15s transform ease;
+    }
+    button:active{transform:scale(.98)}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .muted{color:var(--muted);font-size:13px}
+    .out{white-space:pre-wrap;line-height:1.45}
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:#edf2ff;color:#2745ff;font-weight:600;font-size:12px}
+    .center{display:grid;place-items:center}
+    .small{font-size:12px;color:#888}
+  </style>
 </head>
 <body>
-  <header>
-    <h1>🌟 AstraFit</h1>
-    <p>Calorie · Training · AI Coach</p>
-  </header>
+  <div class="wrap">
 
-  <!-- Calcolo Calorie -->
-  <section id="calorie">
-    <h2>Calcolo Calorie</h2>
-    <form id="calorieForm">
-      <label>Età: <input type="number" id="age" required></label><br>
-      <label>Peso (kg): <input type="number" id="weight" required></label><br>
-      <label>Altezza (cm): <input type="number" id="height" required></label><br>
-      <label>Genere:
-        <select id="gender">
-          <option value="male">Uomo</option>
-          <option value="female">Donna</option>
-        </select>
-      </label><br>
-      <label>Attività:
-        <select id="activity">
-          <option value="1.2">Sedentario</option>
-          <option value="1.375">Leggero</option>
-          <option value="1.55">Moderato</option>
-          <option value="1.725">Intenso</option>
-        </select>
-      </label><br>
-      <button type="submit">Calcola</button>
-    </form>
-    <p id="calorieResult"></p>
-  </section>
+    <!-- HERO -->
+    <section class="card hero">
+      <div class="logo">★</div>
+      <div>
+        <h1>Astra Fit</h1>
+        <p>Calcolo del fabbisogno calorico, macro, allenamento e Coach AI.</p>
+        <p class="small">© Astra Fit • a cura di Fabio Muraca</p>
+      </div>
+    </section>
 
-  <!-- Training -->
-  <section id="training">
-    <h2>Piano Allenamento</h2>
-    <button onclick="generateTraining()">Genera Allenamento</button>
-    <div id="trainingResult"></div>
-  </section>
+    <!-- CALORIE & MACRO -->
+    <section class="card">
+      <h2>🔥 Calcolo calorie & macro</h2>
+      <div class="grid">
+        <div class="row">
+          <div>
+            <label>Età (anni)</label>
+            <input id="age" type="number" inputmode="numeric" min="10" max="100" placeholder="es. 30" />
+          </div>
+          <div>
+            <label>Genere</label>
+            <select id="gender">
+              <option value="male">Uomo</option>
+              <option value="female">Donna</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label>Peso (kg)</label>
+            <input id="weight" type="number" inputmode="decimal" step="0.1" placeholder="es. 74.5" />
+          </div>
+          <div>
+            <label>Altezza (cm)</label>
+            <input id="height" type="number" inputmode="numeric" placeholder="es. 178" />
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label>Attività</label>
+            <select id="activity">
+              <option value="1.2">Sedentario (1–2/sett.)</option>
+              <option value="1.375">Leggero (2–3/sett.)</option>
+              <option value="1.55">Moderato (3–4/sett.)</option>
+              <option value="1.725">Intenso (5–6/sett.)</option>
+            </select>
+          </div>
+          <div>
+            <label>Obiettivo</label>
+            <select id="goal">
+              <option value="-500">Definizione (−500 kcal)</option>
+              <option value="0" selected>Mantenimento</option>
+              <option value="300">Massa (+300 kcal)</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label>Proteine (g/kg)</label>
+            <input id="protkg" type="number" step="0.1" value="2.0" />
+          </div>
+          <div>
+            <label>Grassi (g/kg)</label>
+            <input id="fatkg" type="number" step="0.1" value="0.9" />
+          </div>
+        </div>
+        <button id="calcBtn">Calcola fabbisogno</button>
+        <div class="out" id="calorieOut"></div>
+        <p class="muted">Formula Mifflin-St Jeor + fattore attività. I carbo = kcal rimanenti.</p>
+      </div>
+    </section>
 
-  <!-- AI Coach -->
-  <section id="ai">
-    <h2>🤖 AI Coach</h2>
-    <textarea id="userMessage" placeholder="Scrivi la tua domanda..."></textarea><br>
-    <button onclick="sendMessage()">Invia</button>
-    <div id="aiResponse"></div>
-  </section>
+    <!-- GENERATORE ALLENAMENTO -->
+    <section class="card">
+      <h2>🏋️ Piano di allenamento</h2>
+      <div class="grid">
+        <div class="row">
+          <div>
+            <label>Obiettivo</label>
+            <select id="trainGoal">
+              <option value="definizione">Definizione</option>
+              <option value="massa">Massa</option>
+              <option value="forza">Forza</option>
+            </select>
+          </div>
+          <div>
+            <label>Giorni/sett.</label>
+            <select id="days">
+              <option>2</option><option selected>3</option><option>4</option><option>5</option>
+            </select>
+          </div>
+        </div>
+        <button id="planBtn">Genera piano</button>
+        <div class="out" id="planOut"></div>
+      </div>
+    </section>
+
+    <!-- COACH AI -->
+    <section class="card">
+      <div style="display:flex;align-items:center;gap:10px;justify-content:space-between">
+        <h2>🤖 Coach AI</h2>
+        <span class="pill">online</span>
+      </div>
+      <textarea id="aiInput" placeholder="Es: Voglio perdere 5 kg in 8 settimane, come mi muovo con calorie/allenamento?"></textarea>
+      <button id="aiBtn">Chiedi</button>
+      <div class="out" id="aiOut"></div>
+      <p class="muted">L’AI risponde tramite il tuo Worker su Cloudflare.</p>
+    </section>
+
+  </div>
 
   <script>
-    // Calorie
-    document.getElementById("calorieForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const age = parseInt(document.getElementById("age").value);
-      const weight = parseFloat(document.getElementById("weight").value);
-      const height = parseFloat(document.getElementById("height").value);
-      const gender = document.getElementById("gender").value;
-      const activity = parseFloat(document.getElementById("activity").value);
+    // ===== Calorie & Macro =====
+    const $ = (id)=>document.getElementById(id);
+    $("calcBtn").addEventListener("click", ()=>{
+      const age = +$("age").value;
+      const w   = +$("weight").value;
+      const h   = +$("height").value;
+      const g   = $("gender").value;
+      const act = +$("activity").value;
+      const goalK = +$("goal").value;
+      const protKg = +$("protkg").value || 2.0;
+      const fatKg  = +$("fatkg").value  || 0.9;
 
-      let bmr = gender === "male"
-        ? 88.36 + (13.4 * weight) + (4.8 * height) - (5.7 * age)
-        : 447.6 + (9.2 * weight) + (3.1 * height) - (4.3 * age);
+      if(!age||!w||!h){$("calorieOut").textContent="Compila età, peso e altezza.";return;}
 
-      let calories = bmr * activity;
-      document.getElementById("calorieResult").innerText = 
-        `Il tuo fabbisogno calorico è circa ${Math.round(calories)} kcal/giorno.`;
+      const bmr = (g==="male")
+        ? 88.36 + (13.4*w) + (4.8*h) - (5.7*age)
+        : 447.6 + (9.2*w)  + (3.1*h) - (4.3*age);
+
+      const tdee = bmr * act;
+      const target = Math.max(1200, Math.round(tdee + goalK)); // minimo sicurezza
+
+      const prot = Math.round(protKg * w);            // g
+      const fat  = Math.round(fatKg  * w);            // g
+      const kcalPF = prot*4 + fat*9;
+      const carb = Math.max(0, Math.round((target - kcalPF)/4)); // g
+
+      $("calorieOut").textContent =
+        `TDEE stimato: ${Math.round(tdee)} kcal\n`+
+        `Target: ${target} kcal (${goalK>=0?"+":""}${goalK} kcal)\n\n`+
+        `Macro indicativi:\n`+
+        `• Proteine: ${prot} g (${Math.round(prot*4)} kcal)\n`+
+        `• Grassi:   ${fat} g (${Math.round(fat*9)} kcal)\n`+
+        `• Carbo:    ${carb} g (${Math.round(carb*4)} kcal)`;
     });
 
-    // Training (demo base)
-    function generateTraining() {
-      document.getElementById("trainingResult").innerHTML = `
-        <ul>
-          <li>Squat 3x10</li>
-          <li>Panca piana 3x8</li>
-          <li>Lat Machine 3x10</li>
-          <li>Alzate laterali 3x12</li>
-        </ul>
-      `;
-    }
+    // ===== Allenamento semplice =====
+    $("planBtn").addEventListener("click", ()=>{
+      const goal = $("trainGoal").value;
+      const days = +$("days").value;
+      const templates = {
+        2: [
+          "Giorno A: Full body (Squat 3x8, Panca 3x8, Rematore 3x10, Plank 3x40s)",
+          "Giorno B: Full body (Stacco 3x5, Spinte manubri 3x10, Lat 3x10, Affondi 3x12)"
+        ],
+        3: [
+          "Push: Panca 4x6-8, Military 3x8, Croci 3x12, French 3x12",
+          "Pull: Stacco 3x5, Rematore 4x8, Lat 3x10, Curl 3x12",
+          "Legs: Squat 4x6-8, Pressa 3x10, RDL 3x8, Polpacci 3x15"
+        ],
+        4: [
+          "Upper A: Panca 4x6, Rematore 4x8, Alzate lat 3x12, Curl 3x12",
+          "Lower A: Squat 4x6, RDL 3x8, Affondi 3x12, Core 3x40s",
+          "Upper B: Military 4x6, Trazioni/Lat 4x8-10, Croci 3x12, French 3x12",
+          "Lower B: Stacco 3x5, Pressa 3x10, Leg curl 3x12, Polpacci 3x15"
+        ],
+        5: [
+          "Petto/Tric", "Schiena/Bic", "Gambe pesante", "Spalle/Core", "Gambe pompaggio"
+        ]
+      };
+      const note = goal==="definizione"
+        ? "Mantieni RPE 7-8, volume medio, rest 60-90s."
+        : goal==="massa"
+          ? "Progressione carichi, surplus moderato, rest 90-120s."
+          : "Focalizzati su multiarticolari, progressione % su 3-5 reps.";
 
-    // AI
-    async function sendMessage() {
-      const msg = document.getElementById("userMessage").value;
-      const responseDiv = document.getElementById("aiResponse");
-      responseDiv.innerText = "⏳ Attendi risposta...";
+      $("planOut").textContent = templates[days].map((l,i)=>`• ${l}`).join("\n") + `\n\nNote: ${note}`;
+    });
 
-      try {
-        const res = await fetch("https://astra-fit-ai.fabiomuraca.workers.dev/", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: msg })
+    // ===== Coach AI (Worker) =====
+    const WORKER_CHAT_URL = "https://astra-fit-ai.fabiomuraca.workers.dev/api/chat";
+    $("aiBtn").addEventListener("click", async ()=>{
+      const q = ($("aiInput").value || "").trim();
+      const out = $("aiOut");
+      if(!q){ out.textContent = "Scrivi una domanda."; return; }
+      out.textContent = "⏳ Sto pensando...";
+      try{
+        const r = await fetch(WORKER_CHAT_URL, {
+          method:"POST", headers:{"Content-Type":"application/json"},
+          body: JSON.stringify({ message: q })
         });
-        const data = await res.json();
-        responseDiv.innerText = data.reply || "Errore nella risposta.";
-      } catch (err) {
-        responseDiv.innerText = "❌ Server non disponibile.";
+        const data = await r.json();
+        out.textContent = data.reply || "Nessuna risposta.";
+      }catch(e){
+        out.textContent = "❌ Errore di rete. Riprova.";
       }
-    }
+    });
   </script>
 </body>
 </html>
