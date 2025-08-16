@@ -3,133 +3,141 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AstraFit</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f4f4f9; }
-    header { background: #111; color: #fff; padding: 1rem; text-align: center; }
-    section { padding: 1.5rem; margin: 1rem; background: #fff; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);}
-    h2 { margin-top: 0; }
-    input, select, button, textarea { width: 100%; padding: 0.7rem; margin: 0.5rem 0; border-radius: 6px; border: 1px solid #ccc; }
-    button { background: #111; color: #fff; border: none; cursor: pointer; font-weight: bold; }
-    button:hover { background: #333; }
-    .chat-box { border: 1px solid #ccc; height: 200px; overflow-y: auto; padding: 0.5rem; background: #fafafa; border-radius: 6px; }
-    .message { margin: 0.3rem 0; }
-    .user { font-weight: bold; color: #111; }
-    .ai { color: #0077cc; }
-  </style>
+  <title>Astra Fit</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-gray-100 font-sans">
+  <div class="max-w-xl mx-auto p-4">
 
-  <header>
-    <h1>AstraFit 🚀</h1>
-    <p>Il tuo assistente fitness personale</p>
-  </header>
+    <!-- Header -->
+    <div class="bg-white rounded-2xl shadow p-6 mb-6 text-center">
+      <div class="text-4xl mb-2">⭐</div>
+      <h1 class="text-2xl font-bold">Astra Fit</h1>
+      <p class="text-gray-600">Calcolo del fabbisogno, macro, allenamento e assistenza AI.</p>
+      <p class="text-xs text-gray-400 mt-2">© Astra Fit • a cura di Fabio Muraca</p>
+    </div>
 
-  <!-- Calcolo calorie -->
-  <section>
-    <h2>Calcola le tue calorie</h2>
-    <form id="calorie-form">
-      <input type="number" id="peso" placeholder="Peso (kg)" required>
-      <input type="number" id="altezza" placeholder="Altezza (cm)" required>
-      <input type="number" id="eta" placeholder="Età" required>
-      <select id="genere">
-        <option value="maschio">Maschio</option>
-        <option value="femmina">Femmina</option>
-      </select>
-      <select id="attivita">
-        <option value="1.2">Sedentario</option>
-        <option value="1.55">Moderato</option>
-        <option value="1.9">Intenso</option>
-      </select>
-      <button type="submit">Calcola</button>
-    </form>
-    <p id="risultato-calorie"></p>
-  </section>
+    <!-- Calcolo calorie & macro -->
+    <div class="bg-white rounded-2xl shadow p-6 mb-6">
+      <h2 class="text-xl font-bold mb-4">Calcolo calorie & macro</h2>
+      <form id="macroForm" class="space-y-3">
+        <select id="sesso" class="w-full p-2 border rounded">
+          <option>Maschio</option>
+          <option>Femmina</option>
+        </select>
+        <input type="number" id="eta" placeholder="Età (anni)" class="w-full p-2 border rounded">
+        <div class="flex space-x-2">
+          <input type="number" id="peso" placeholder="Peso (kg)" class="w-1/2 p-2 border rounded">
+          <input type="number" id="altezza" placeholder="Altezza (cm)" class="w-1/2 p-2 border rounded">
+        </div>
+        <select id="attivita" class="w-full p-2 border rounded">
+          <option>Sedentario (1–2 allen./sett.)</option>
+          <option>Moderato (3–4 allen./sett.)</option>
+          <option>Intenso (5–6 allen./sett.)</option>
+        </select>
+        <select id="obiettivo" class="w-full p-2 border rounded">
+          <option>Definizione (-500 kcal)</option>
+          <option>Mantenimento</option>
+          <option>Massa (+300 kcal)</option>
+        </select>
+        <input type="number" id="proteine" placeholder="Proteine (g/kg)" value="2" class="w-full p-2 border rounded">
+        <button type="submit" class="w-full bg-black text-white p-2 rounded">Calcola</button>
+      </form>
+      <div id="risultato" class="mt-4 text-sm text-gray-700"></div>
+    </div>
 
-  <!-- Training -->
-  <section>
-    <h2>Piano di allenamento</h2>
-    <form id="training-form">
-      <input type="text" id="obiettivo" placeholder="Obiettivo (es: massa, definizione)" required>
-      <input type="number" id="giorni" placeholder="Giorni a settimana" required>
-      <button type="submit">Genera piano</button>
-    </form>
-    <div id="risultato-training"></div>
-  </section>
+    <!-- Piano di allenamento -->
+    <div class="bg-white rounded-2xl shadow p-6 mb-6">
+      <h2 class="text-xl font-bold mb-4">Piano di allenamento</h2>
+      <input type="text" id="obiettivoAllenamento" placeholder="Obiettivo (es: massa, definizione)" class="w-full p-2 border rounded mb-2">
+      <input type="number" id="giorniAllenamento" placeholder="Giorni a settimana" class="w-full p-2 border rounded mb-2">
+      <button onclick="generaPiano()" class="w-full bg-black text-white p-2 rounded">Genera piano</button>
+      <div id="pianoRisultato" class="mt-4 text-sm text-gray-700"></div>
+    </div>
 
-  <!-- AI Assistant -->
-  <section>
-    <h2>Chat con Astra AI 🤖</h2>
-    <div class="chat-box" id="chat-box"></div>
-    <textarea id="user-input" placeholder="Scrivi la tua domanda..."></textarea>
-    <button id="send-btn">Invia</button>
-  </section>
+    <!-- Chat con AI -->
+    <div class="bg-white rounded-2xl shadow p-6">
+      <h2 class="text-xl font-bold mb-4">Chat con Astra AI 🤖</h2>
+      <div id="chatBox" class="h-64 overflow-y-auto border p-3 rounded mb-3 bg-gray-50"></div>
+      <div class="flex space-x-2">
+        <input type="text" id="userInput" placeholder="Scrivi la tua domanda..." class="flex-1 p-2 border rounded">
+        <button onclick="inviaMessaggio()" class="bg-black text-white px-4 rounded">Invia</button>
+      </div>
+    </div>
+
+  </div>
 
   <script>
-    // Calorie
-    document.getElementById("calorie-form").addEventListener("submit", e => {
+    // Calcolo calorie e macro
+    document.getElementById("macroForm").addEventListener("submit", function(e) {
       e.preventDefault();
       const peso = parseFloat(document.getElementById("peso").value);
       const altezza = parseFloat(document.getElementById("altezza").value);
-      const eta = parseInt(document.getElementById("eta").value);
-      const genere = document.getElementById("genere").value;
-      const attivita = parseFloat(document.getElementById("attivita").value);
-      let bmr;
-      if (genere === "maschio") {
-        bmr = 10*peso + 6.25*altezza - 5*eta + 5;
-      } else {
-        bmr = 10*peso + 6.25*altezza - 5*eta - 161;
-      }
-      const tdee = Math.round(bmr * attivita);
-      document.getElementById("risultato-calorie").textContent = "Fabbisogno giornaliero: " + tdee + " kcal";
-    });
-
-    // Training
-    document.getElementById("training-form").addEventListener("submit", e => {
-      e.preventDefault();
+      const eta = parseFloat(document.getElementById("eta").value);
+      const sesso = document.getElementById("sesso").value;
+      const attivita = document.getElementById("attivita").value;
       const obiettivo = document.getElementById("obiettivo").value;
-      const giorni = document.getElementById("giorni").value;
-      document.getElementById("risultato-training").textContent =
-        `Piano generato: ${giorni} sessioni settimanali per obiettivo ${obiettivo}.`;
+      const proteine = parseFloat(document.getElementById("proteine").value);
+
+      let bmr = sesso === "Maschio"
+        ? 10*peso + 6.25*altezza - 5*eta + 5
+        : 10*peso + 6.25*altezza - 5*eta - 161;
+
+      let fattore = attivita.includes("Moderato") ? 1.55 : attivita.includes("Intenso") ? 1.75 : 1.2;
+      let tdee = bmr * fattore;
+      if (obiettivo.includes("Definizione")) tdee -= 500;
+      if (obiettivo.includes("Massa")) tdee += 300;
+
+      let kcal = Math.round(tdee);
+      let pro = Math.round(proteine * peso);
+      let fat = Math.round((0.8 * peso));
+      let carb = Math.round((kcal - (pro*4 + fat*9)) / 4);
+
+      document.getElementById("risultato").innerHTML =
+        `<b>Fabbisogno:</b> ${kcal} kcal<br>
+         Proteine: ${pro} g<br>
+         Grassi: ${fat} g<br>
+         Carboidrati: ${carb} g`;
     });
 
-    // Chat AI
-    const chatBox = document.getElementById("chat-box");
-    document.getElementById("send-btn").addEventListener("click", async () => {
-      const input = document.getElementById("user-input");
-      const userMsg = input.value.trim();
-      if (!userMsg) return;
+    // Piano allenamento (mock)
+    function generaPiano() {
+      const obiettivo = document.getElementById("obiettivoAllenamento").value;
+      const giorni = document.getElementById("giorniAllenamento").value;
+      document.getElementById("pianoRisultato").innerHTML =
+        `Piano generato per <b>${obiettivo}</b>, ${giorni} giorni a settimana.`;
+    }
 
-      // mostra messaggio utente
-      const userDiv = document.createElement("div");
-      userDiv.className = "message user";
-      userDiv.textContent = "👤: " + userMsg;
-      chatBox.appendChild(userDiv);
+    // Chat AI con Worker
+    async function inviaMessaggio() {
+      const input = document.getElementById("userInput");
+      const messaggio = input.value.trim();
+      if (!messaggio) return;
 
-      // reset input
+      const chatBox = document.getElementById("chatBox");
+      chatBox.innerHTML += `<div>👤: ${messaggio}</div>`;
+
       input.value = "";
 
-      // chiamata al Worker
-      const aiDiv = document.createElement("div");
-      aiDiv.className = "message ai";
-      aiDiv.textContent = "🤖: ...";
-      chatBox.appendChild(aiDiv);
-
       try {
-        const res = await fetch("https://astra-fit-ai.fabiomuraca.workers.dev/", {
+        const risposta = await fetch("https://astra-fit-ai.fabiomuraca.workers.dev/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: userMsg })
+          body: JSON.stringify({ message: messaggio })
         });
-        const data = await res.json();
-        aiDiv.textContent = "🤖: " + (data.reply || "Errore risposta AI");
+
+        const data = await risposta.json();
+        if (data.response) {
+          chatBox.innerHTML += `<div>🤖: ${data.response}</div>`;
+        } else {
+          chatBox.innerHTML += `<div>⚠️ Errore risposta AI</div>`;
+        }
       } catch (err) {
-        aiDiv.textContent = "🤖: Errore di connessione al server";
+        chatBox.innerHTML += `<div>⚠️ Errore connessione</div>`;
       }
 
       chatBox.scrollTop = chatBox.scrollHeight;
-    });
+    }
   </script>
 </body>
 </html>
