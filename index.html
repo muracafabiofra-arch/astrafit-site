@@ -5,13 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Astra Fit</title>
 
-  <!-- Icona Home iPhone (file in root accanto a index.html) -->
-  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=7" />
+  <!-- Icona Home iPhone: DEVE esistere in root accanto a index.html -->
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=8" />
 
-  <!-- iOS web-app style -->
+  <!-- iOS stile app -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="AstraFit" />
+
+  <!-- Forza modalità chiara -->
   <meta name="theme-color" content="#000000" />
   <meta name="color-scheme" content="light" />
 
@@ -42,35 +44,13 @@
   <main class="wrap">
     <section class="card">
       <div class="icon">
-        <!-- lo script sotto imposterà lo src corretto -->
-        <img id="appIcon" alt="Astra Fit" width="64" height="64" />
+        <!-- Percorso definitivo su GitHub Pages (niente "public/") -->
+        <img src="icons/astrafit-icon-192.png" alt="Astra Fit" width="64" height="64" />
       </div>
       <h1>Astra Fit</h1>
       <p>Calcolo del fabbisogno calorico, macro e training con AI.</p>
       <p class="small">© Astra Fit • a cura di Fabio Muraca</p>
     </section>
   </main>
-
-  <script>
-    // Prova entrambi i percorsi (con/senza "public") e usa il primo che risponde 200
-    (async () => {
-      const base = "https://muracafabiofra-arch.github.io/astrafit-site/";
-      const candidates = [
-        "public/icons/astrafit-icon-192.png",
-        "icons/astrafit-icon-192.png",
-        base + "public/icons/astrafit-icon-192.png",
-        base + "icons/astrafit-icon-192.png"
-      ];
-      const img = document.getElementById("appIcon");
-      for (const url of candidates) {
-        try {
-          const r = await fetch(url, { method: "HEAD", cache: "no-store" });
-          if (r.ok) { img.src = url; return; }
-        } catch (e) {}
-      }
-      // Fallback: un cerchietto bianco se non trova nulla
-      img.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Crect width='64' height='64' rx='12' fill='%23fff'/%3E%3C/svg%3E";
-    })();
-  </script>
 </body>
 </html>
