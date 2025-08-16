@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Astra Fit</title>
 
-  <!-- Icona Home iPhone (metti apple-touch-icon.png 180x180 nella root) -->
+  <!-- Icona iPhone (metti un 180x180 in root con questo nome) -->
   <link rel="apple-touch-icon" href="apple-touch-icon.png?v=1" />
 
-  <!-- Stile app iOS + tema chiaro -->
+  <!-- iOS fullscreen + tema -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="AstraFit" />
@@ -38,9 +38,8 @@
     .hero{ text-align:center; padding:18px; }
     .logo{
       width:72px; height:72px; border-radius:18px; background:#000; margin:0 auto 10px;
-      display:grid; place-items:center;
+      display:grid; place-items:center; color:#fff; font-weight:900; font-size:30px;
     }
-    .logo svg{ width:40px; height:40px; color:#fff; }
     h1{ margin:8px 0 6px; font-size:28px; }
     h2{ margin:0 0 10px; font-size:20px; }
     p{ margin:6px 0; color:#222; }
@@ -73,11 +72,7 @@
 
     <!-- HERO -->
     <section class="card hero">
-      <div class="logo">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M12 2l2.39 5.64L20.5 8l-4.5 3.9L17.3 18 12 14.9 6.7 18l1.3-6.1L3.5 8l6.11-.36L12 2z"/>
-        </svg>
-      </div>
+      <div class="logo">★</div>
       <h1>Astra Fit</h1>
       <p>Calcolo del fabbisogno, macro, allenamento e assistenza AI.</p>
       <p class="muted">© Astra Fit • a cura di Fabio Muraca</p>
@@ -219,7 +214,6 @@
         <div style="grid-column:1/-1;display:flex;gap:10px;align-items:center">
           <button type="submit">Genera allenamento</button>
           <button type="button" id="copyPlan" class="secondary">Copia piano</button>
-          <span class="muted">Preferenze salvate localmente.</span>
         </div>
       </form>
       <div id="plan" style="margin-top:14px; display:none"></div>
@@ -279,7 +273,7 @@
         </div>
         <div style="grid-column:1/-1">
           <label for="ai-notes">Note / preferenze (opz.)</label>
-          <input id="ai-notes" placeholder="Esempio: preferisco bilanciere; no corsa; spalla sensibile…" />
+          <input id="ai-notes" placeholder="Es: preferisco bilanciere; no corsa; spalla sensibile…" />
         </div>
         <div style="grid-column:1/-1;display:flex;gap:10px;align-items:center">
           <button type="submit">Genera con AI</button>
@@ -292,10 +286,11 @@
 
   </main>
 
-  <!-- ========== SCRIPTS ========== -->
+  <!-- ================= SCRIPTS ================= -->
   <script>
-    /* ---------- Calcolo nutrizione ---------- */
     const $ = id => document.getElementById(id);
+
+    /* ---------- Calcolo nutrizione ---------- */
     ["sex","age","weight","height","activity","goal","prot","fat"].forEach(k=>{
       const v = localStorage.getItem("af_"+k);
       if(v!==null) $(k).value = v;
@@ -314,7 +309,7 @@
       const gFat  = Math.max(0.6, +$("fat").value);
       if(!age||!w||!h||!act) return;
 
-      // BMR Mifflin–St Jeor
+      // Mifflin–St Jeor
       let bmr = 10*w + 6.25*h - 5*age + (sex==="M" ? 5 : -161);
       let tdee = bmr * act;
       let delta = goal==="cut" ? -500 : goal==="bulk" ? +300 : 0;
@@ -465,32 +460,60 @@
       catch { alert(txt); }
     });
 
-    /* ---------- Assistente AI (endpoint serverless) ---------- */
-    const API_URL = "https://TUO-WORKER-URL/plan"; /* ⬅️ sostituisci con il tuo Worker */
+    /* ---------- Assistente AI via Cloudflare Worker ---------- */
+    const API_URL = "https://astra-fit-ai.fabiomuraca.workers.dev"; // <-- il tuo Worker
 
     const g = id => document.getElementById(id);
     g("ai-form").addEventListener("submit", async e=>{
       e.preventDefault();
-      const payload = {
-        exp: g("ai-exp").value, days:+g("ai-days").value, goal:g("ai-goal").value,
-        equip:g("ai-equip").value, limits:g("ai-limits").value, minutes:+g("ai-min").value,
+
+      // Compongo un prompt “pulito” dai dati dell’utente + (se disponibili) i dati nutrizionali
+      const p = {
+        exp: g("ai-exp").value,
+        days:+g("ai-days").value,
+        goal:g("ai-goal").value,
+        equip:g("ai-equip").value,
+        limits:g("ai-limits").value,
+        minutes:+g("ai-min").value,
         notes:g("ai-notes").value||""
       };
-      payload.nutrition = {
+      const nutri = {
         bmr: $("#bmr")?.textContent || "", tdee: $("#tdee")?.textContent || "",
         target: $("#target")?.textContent || "", pG: $("#pG")?.textContent || "",
         fG: $("#fG")?.textContent || "", cG: $("#cG")?.textContent || ""
       };
 
+      const prompt =
+`Sei un coach di forza/ricomposizione. Genera un piano in italiano, pratico e strutturato.
+Dati:
+- Esperienza: ${p.exp}
+- Giorni/settimana: ${p.days}
+- Obiettivo: ${p.goal}
+- Attrezzatura: ${p.equip}
+- Limitazioni: ${p.limits}
+- Minuti per seduta: ${p.minutes}
+- Note: ${p.notes || "—"}
+- Nutrizione (se presente): BMR ${nutri.bmr||"?"}, TDEE ${nutri.tdee||"?"}, Target ${nutri.target||"?"}, Macro P${nutri.pG||"?"} F${nutri.fG||"?"} C${nutri.cG||"?"}
+
+Istruzioni:
+- Scegli split coerente (Full/UL/PPL/4d ibrido).
+- Per ogni giorno: 5–6 esercizi (4 se tempo=30’), con serie×reps e RPE.
+- Adatta agli eventuali limiti (evita esercizi controindicati).
+- Aggiungi riscaldamento, progressione carico, note tecniche.
+- Output in sezioni chiare. Solo testo.`;
+
       g("ai-status").textContent = "Sto preparando il piano…";
       g("ai-out").style.display = "none"; g("ai-out").textContent = "";
 
       try{
-        if(!API_URL.includes("http")) throw new Error("Configura l'API_URL.");
-        const res = await fetch(API_URL, { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(payload) });
+        const res = await fetch(API_URL, {
+          method:"POST",
+          headers:{ "Content-Type":"application/json" },
+          body: JSON.stringify({ prompt })
+        });
         if(!res.ok) throw new Error("Server non disponibile");
         const data = await res.json();
-        const text = (data.plan || data.message || "Nessuna risposta.").trim();
+        const text = (data.reply || "Nessuna risposta.").trim();
         g("ai-out").textContent = text; g("ai-out").style.display = "block";
         g("ai-status").textContent = "Pronto ✅";
         localStorage.setItem("af_ai_plan", text);
