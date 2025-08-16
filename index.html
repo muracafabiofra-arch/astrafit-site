@@ -5,54 +5,45 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Astra Fit</title>
 
-  <!-- iPhone: usa quest’icona per la Home (mettila in root accanto a index.html) -->
+  <!-- Dì al browser che TUTTI i percorsi relativi partono da GitHub Pages -->
+  <base href="https://muracafabiofra-arch.github.io/astrafit-site/">
+
+  <!-- Icona Home iPhone (il file è in root della repo) -->
   <link rel="apple-touch-icon" href="apple-touch-icon.png?v=7" />
 
-  <!-- iOS: avvio come web-app e status bar -->
+  <!-- iOS web-app style -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="AstraFit" />
 
-  <!-- Tema (utile anche a Safari) -->
+  <!-- Forza modalità chiara -->
   <meta name="theme-color" content="#000000" />
   <meta name="color-scheme" content="light" />
 
-  <!-- Stili minimi: sempre chiaro, testo nero -->
   <style>
     :root { --bg:#ffffff; --card:#ffffff; --text:#000000; --muted:#666; }
     html,body { height:100%; margin:0; }
     body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      display: grid;
-      place-items: center;
-      padding: 24px;
+      background: var(--bg); color: var(--text);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      display:grid; place-items:center; padding:24px;
     }
-    .wrap { max-width: 720px; width: 100%; }
-    .card {
-      background: var(--card);
-      border-radius: 20px;
-      padding: 28px 22px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.08);
-      text-align: center;
-    }
-    .icon {
-      width: 88px; height: 88px; margin: 0 auto 14px;
-      border-radius: 20px; background: #000; display:grid; place-items:center;
-    }
-    .icon img { width: 64px; height: 64px; display:block; }
-    h1 { margin: 8px 0 6px; font-size: 28px; }
-    p { margin: 6px 0; }
-    .small { color: var(--muted); font-size: 12px; margin-top: 10px; }
-    a { color:#000; }
+    .wrap { max-width:720px; width:100%; }
+    .card { background:var(--card); border-radius:20px; padding:28px 22px;
+            box-shadow:0 10px 30px rgba(0,0,0,.08); text-align:center; }
+    .icon { width:88px; height:88px; margin:0 auto 14px; border-radius:20px; background:#000;
+            display:grid; place-items:center; }
+    .icon img { width:64px; height:64px; display:block; }
+    h1 { margin:8px 0 6px; font-size:28px; }
+    p { margin:6px 0; }
+    .small { color:var(--muted); font-size:12px; margin-top:10px; }
   </style>
 </head>
 <body>
   <main class="wrap">
     <section class="card">
       <div class="icon">
-        <!-- questa è solo decorativa nella card; se non esiste, vedrai comunque la pagina -->
+        <!-- NOTA: niente "public/". Con <base> basta "icons/..." -->
         <img src="icons/astrafit-icon-192.png" alt="Astra Fit" width="64" height="64" />
       </div>
       <h1>Astra Fit</h1>
