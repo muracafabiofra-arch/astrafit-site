@@ -5,56 +5,211 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Astra Fit</title>
 
-  <!-- iPhone: icona Home (file in root) -->
-  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=1" />
+  <!-- Icona Home iPhone (file in root) -->
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=8" />
 
-  <!-- iOS “app style” -->
+  <!-- Stile “app” su iOS + modalità chiara -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="AstraFit" />
   <meta name="theme-color" content="#000000" />
   <meta name="color-scheme" content="light" />
 
-  <!-- PWA (utile anche per Android/Chrome) -->
-  <link rel="manifest" href="manifest.webmanifest" />
-  <script>
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("sw.js").catch(()=>{});
-    }
-  </script>
-
   <style>
-    :root { --bg:#fff; --card:#fff; --text:#000; --muted:#666; }
+    :root { --bg:#fff; --card:#fff; --text:#000; --muted:#666; --accent:#000; }
+    * { box-sizing: border-box; }
     html,body { height:100%; margin:0; }
     body {
       background:var(--bg); color:var(--text);
       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-      display:grid; place-items:center; padding:24px;
+      padding:24px; display:grid; place-items:start center;
     }
-    .wrap { max-width:720px; width:100%; }
-    .card {
-      background:var(--card); border-radius:20px; padding:28px 22px;
-      box-shadow:0 10px 30px rgba(0,0,0,.08); text-align:center;
+    .wrap { width:100%; max-width:820px; }
+    .card { background:var(--card); border-radius:20px; padding:22px;
+            box-shadow:0 10px 30px rgba(0,0,0,.08); margin-bottom:18px; }
+    .hero { text-align:center; padding:18px; }
+    .logo {
+      width:72px; height:72px; border-radius:18px; background:#000; margin:0 auto 10px;
+      display:grid; place-items:center;
     }
-    .icon { width:88px; height:88px; margin:0 auto 14px; border-radius:20px;
-            background:#000; display:grid; place-items:center; }
-    .icon img { width:64px; height:64px; display:block; }
+    .logo svg { width:40px; height:40px; color:#fff; }
     h1 { margin:8px 0 6px; font-size:28px; }
-    p { margin:6px 0; }
-    .small { color:var(--muted); font-size:12px; margin-top:10px; }
+    p { margin:6px 0; color:#222; }
+    .muted { color:var(--muted); font-size:12px; }
+    form { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    @media (max-width:640px){ form{ grid-template-columns:1fr; } }
+    label { font-size:13px; color:#333; display:block; margin-bottom:6px; }
+    input, select {
+      width:100%; padding:10px 12px; border-radius:12px; border:1px solid #e5e5e5; font-size:16px;
+      background:#fff; color:#000;
+    }
+    .row { display:flex; gap:10px; }
+    .row > * { flex:1; }
+    button {
+      background:var(--accent); color:#fff; border:0; padding:12px 16px; border-radius:14px;
+      font-weight:600; cursor:pointer;
+    }
+    .results { display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-top:12px; }
+    @media (max-width:640px){ .results{ grid-template-columns:1fr; } }
+    .tile { border:1px solid #eee; border-radius:14px; padding:14px; text-align:center; }
+    .tile h3 { margin:4px 0 6px; font-size:14px; color:#444; font-weight:600; }
+    .tile .big { font-size:22px; font-weight:800; }
+    .footnote { font-size:12px; color:#555; margin-top:8px; }
   </style>
 </head>
 <body>
   <main class="wrap">
-    <section class="card">
-      <div class="icon">
-        <!-- ATTENZIONE: niente “public/”. Gli asset stanno in /icons -->
-        <img src="icons/astrafit-icon-192.png" alt="Astra Fit" width="64" height="64" />
+    <section class="card hero">
+      <div class="logo">
+        <!-- SVG inline (niente file esterni) -->
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 2l2.39 5.64L20.5 8l-4.5 3.9L17.3 18 12 14.9 6.7 18l1.3-6.1L3.5 8l6.11-.36L12 2z"/>
+        </svg>
       </div>
       <h1>Astra Fit</h1>
-      <p>Calcolo del fabbisogno calorico, macro e training con AI.</p>
-      <p class="small">© Astra Fit • a cura di Fabio Muraca</p>
+      <p>Calcolo del fabbisogno calorico e dei macro – rapido e preciso.</p>
+      <p class="muted">© Astra Fit • a cura di Fabio Muraca</p>
+    </section>
+
+    <section class="card">
+      <form id="form">
+        <div>
+          <label for="sex">Sesso</label>
+          <select id="sex">
+            <option value="M">Maschio</option>
+            <option value="F">Femmina</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="age">Età (anni)</label>
+          <input id="age" type="number" min="10" max="100" inputmode="numeric" required>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="weight">Peso (kg)</label>
+            <input id="weight" type="number" step="0.1" min="30" max="300" required>
+          </div>
+          <div>
+            <label for="height">Altezza (cm)</label>
+            <input id="height" type="number" step="0.5" min="120" max="230" required>
+          </div>
+        </div>
+
+        <div>
+          <label for="activity">Attività</label>
+          <select id="activity">
+            <option value="1.2">Sedentario (1–2 allenamenti/sett.)</option>
+            <option value="1.375">Leggero (2–3)</option>
+            <option value="1.55">Moderato (3–5)</option>
+            <option value="1.725">Intenso (6–7)</option>
+            <option value="1.9">Atleta (2x/dì)</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="goal">Obiettivo</label>
+          <select id="goal">
+            <option value="cut">Definizione (-500 kcal)</option>
+            <option value="maint">Mantenimento (0)</option>
+            <option value="bulk">Massa (+300 kcal)</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="prot">Proteine (g/kg)</label>
+          <input id="prot" type="number" step="0.1" min="1.2" max="3.0" value="1.8">
+        </div>
+
+        <div>
+          <label for="fat">Grassi (g/kg)</label>
+          <input id="fat" type="number" step="0.1" min="0.6" max="1.5" value="0.8">
+        </div>
+
+        <div style="grid-column:1/-1; display:flex; gap:10px; align-items:center; margin-top:8px;">
+          <button type="submit">Calcola</button>
+          <span class="muted">I tuoi dati restano sul dispositivo.</span>
+        </div>
+      </form>
+
+      <div id="out" style="margin-top:14px; display:none;">
+        <div class="results">
+          <div class="tile"><h3>BMR</h3><div class="big" id="bmr">—</div><div class="muted">kcal</div></div>
+          <div class="tile"><h3>TDEE</h3><div class="big" id="tdee">—</div><div class="muted">kcal</div></div>
+          <div class="tile"><h3>Target</h3><div class="big" id="target">—</div><div class="muted">kcal/giorno</div></div>
+        </div>
+
+        <div class="results" style="margin-top:10px;">
+          <div class="tile"><h3>Proteine</h3><div class="big" id="pG">—</div><div class="muted">g (≈ <span id="pK">—</span> kcal)</div></div>
+          <div class="tile"><h3>Grassi</h3><div class="big" id="fG">—</div><div class="muted">g (≈ <span id="fK">—</span> kcal)</div></div>
+          <div class="tile"><h3>Carboidrati</h3><div class="big" id="cG">—</div><div class="muted">g (≈ <span id="cK">—</span> kcal)</div></div>
+        </div>
+
+        <div class="footnote">
+          Formula Mifflin–St Jeor • Proteine 1.8 g/kg (modificabile), Grassi 0.8 g/kg (minimo) • Carbo = resto.
+        </div>
+      </div>
     </section>
   </main>
+
+  <script>
+    const $ = id => document.getElementById(id);
+
+    // Carica eventuali dati salvati
+    ["sex","age","weight","height","activity","goal","prot","fat"].forEach(k=>{
+      const v = localStorage.getItem("af_"+k);
+      if(v!==null){ $(k).value = v; }
+    });
+
+    // Salva on change
+    document.querySelectorAll("#form input,#form select").forEach(el=>{
+      el.addEventListener("change", ()=> localStorage.setItem("af_"+el.id, el.value));
+    });
+
+    $("form").addEventListener("submit", (e)=>{
+      e.preventDefault();
+      // Leggi input
+      const sex = $("sex").value;
+      const age = +$("age").value;
+      const w = +$("weight").value;      // kg
+      const h = +$("height").value;      // cm
+      const act = +$("activity").value;
+      const goal = $("goal").value;
+      const gProt = Math.max(1.2, +$("prot").value); // sicurezza limiti
+      const gFat  = Math.max(0.6, +$("fat").value);
+
+      if(!age||!w||!h||!act) return;
+
+      // BMR (Mifflin–St Jeor)
+      let bmr = 10*w + 6.25*h - 5*age + (sex==="M" ? 5 : -161);
+      let tdee = bmr * act;
+
+      // Calorie target
+      let delta = goal==="cut" ? -500 : goal==="bulk" ? +300 : 0;
+      let target = Math.max(1200, Math.round(tdee + delta)); // minimo sicurezza
+
+      // Macro
+      const pG = Math.round(gProt * w);          // g proteine
+      const fG = Math.round(gFat  * w);          // g grassi
+      const pK = pG * 4;
+      const fK = fG * 9;
+      const remK = Math.max(0, target - pK - fK);
+      const cG = Math.round(remK / 4);           // g carbo
+      const cK = cG * 4;
+
+      // Output
+      $("bmr").textContent = Math.round(bmr);
+      $("tdee").textContent = Math.round(tdee);
+      $("target").textContent = target;
+
+      $("pG").textContent = pG; $("pK").textContent = pK;
+      $("fG").textContent = fG; $("fK").textContent = fK;
+      $("cG").textContent = cG; $("cK").textContent = cK;
+
+      $("out").style.display = "block";
+      window.scrollTo({ top: document.body.scrollHeight, behavior:"smooth" });
+    });
+  </script>
 </body>
 </html>
